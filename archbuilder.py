@@ -2,9 +2,11 @@
 
 from builder import *
 import json
-import subprocess
+import subprocess, sys
 
-root_dir = '/archbuild'
+exe_name = sys.argv[0]
+exe = os.path.realpath(exe_name)
+root_dir = os.path.dirname(exe)
 
 class Channel(Container):
     def __init__(self, name):
