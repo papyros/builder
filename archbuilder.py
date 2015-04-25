@@ -38,7 +38,7 @@ class PackageJob(Job):
         job_depends = []
 
         for depend in depends:
-            if os.path.exists(self.channel.path + '/' + depend):
+            if os.path.exists(self.channel.path + '/packages/' + depend):
                 job_depends.append(depend)
 
         return job_depends
@@ -60,6 +60,9 @@ class PackageJob(Job):
             self.status = Status.SUCCESS
         else:
             self.status = Status.FAIL
+
+    def current_version(self):
+
 
     def summary(self):
         os.chdir(self.path)
