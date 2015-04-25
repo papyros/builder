@@ -1,0 +1,23 @@
+#! /bin/bash
+
+srcdir=$(pwd)
+tmpfile=$(mktemp)
+
+if [[ $1 = '--latest' ]]; then
+    makepkg -od 2&> /dev/null
+fi
+
+source PKGBUILD
+
+if [[ "`type -t pkgver`" = 'function' ]]; then
+	pkgver 2> $tmpfile 1> /dev/null
+
+	if [[ -s $tmpfile ]]; then
+		echo "?"
+	else
+		cd $srcdir
+		pkgver
+	fi
+else
+	echo $pkgver
+fi
