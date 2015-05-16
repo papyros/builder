@@ -1,0 +1,5 @@
+rm -rf ../../chroot/buildbot
+cp ../../chroot/{root,buildbot}
+
+arch-nspawn chroot/buildbot pacman --no-confirm -S $1
+makechrootpkg -r ../../chroot/
