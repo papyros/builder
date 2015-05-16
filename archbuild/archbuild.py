@@ -182,8 +182,8 @@ class PushRepositoryChanges(buildstep.ShellMixin, steps.BuildStep):
             defer.returnValue(FAILURE)
 
         cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
-                command='git commit --allow-empty -m "Build {} at {} for {}'.format(
-                    self.build.number, time.strftime("%c"), self.arch))
+                command='git commit --allow-empty -m "[{}] Build {} at {}"'.format(
+                    self.arch, self.build.number, time.strftime("%c")))
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
