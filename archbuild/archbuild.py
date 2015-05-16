@@ -87,9 +87,17 @@ class ArchPackage(CleanChrootAction):
         self.package_file = self.package + '-' + self.latest_version + '-' + self.arch + '.pkg.tar.xz'
         
         yield log.addStdout(u'Latest version: {}\n'.format(self.latest_version))
-        yield log.addStdout(u'Package file: {}\n'.format(self.package_file))
+        yield log.addStdout(u'Expected package file: {}\n'.format(self.package_file))
 
-        if self.alreadyBuilt():
+        r = re.compile(r'{}.*\-.*\-{}\.pkg\.tar\.xz'.format(self.package, self.arch))
+        already_built_packages = filter(r.match, self.getProperty('existing_packages'))
+
+        yield log.addStdout(u'Existing packages: {}\n'.format(already_built_packages))
+
+        r = re.compile(r'{}.*\-{}\-{}\.pkg\.tar\.xz'.format(self.package, self.latest_version, self.arch))
+        already_built_same_version = filter(r.match, self.getProperty('existing_packages'))
+
+        if len(already_built_same_version) > 0:
             self.current = True
             yield log.addStdout(u'Package already built, skipping!\n')
         else:
@@ -111,6 +119,11 @@ class ArchPackage(CleanChrootAction):
 
             r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(self.latest_version, self.arch))
             self.artifacts = filter(r.match, cmd.stdout.split())
+
+            r = re.compile(r'.*\-.*\-{}\.pkg\.tar\.xz'.format(self.arch))
+            already_built_packages = filter(r.match, cmd.stdout.split())
+
+            yield log.addStdout(u'Packages after building: {}\n'.format(already_built_packages))
 
             if len(self.artifacts) == 0:
                 yield log.addStdout(u'Error: no packages built!\n')
@@ -135,10 +148,6 @@ class ArchPackage(CleanChrootAction):
                     defer.returnValue(FAILURE)
 
         defer.returnValue(SUCCESS)
-
-    def alreadyBuilt(self):
-        existing_packages = self.getProperty('existing_packages')
-        return self.package_file in existing_packages
 
     def getCurrentSummary(self):
         return {u'step': u'building'}
