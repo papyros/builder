@@ -315,7 +315,7 @@ class ArchRepositoryFactory(util.BuildFactory):
         self.addStep(PushRepositoryChanges(arch))
 
 
-class ArchBuildGitPoller(changes.GitPoller):
+class GitPoller(changes.GitPoller):
     def __init__(self, repourl, branches=None, branch=None,
                  workdir=None, pollInterval=10 * 60,
                  gitbin='git', usetimestamps=True,
