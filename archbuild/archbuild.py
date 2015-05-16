@@ -11,6 +11,7 @@ import subprocess
 import networkx as nx
 import os.path
 import re
+import time
 
 class CleanChrootAction(buildstep.ShellMixin, steps.BuildStep):
     
@@ -115,7 +116,7 @@ class ArchPackage(CleanChrootAction):
                 yield self.runCommand(cmd)
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
-                    
+
                 cmd = yield self.makeRemoteShellCommand(collectStdout=True,
                     command=('repo-add ../../built_packages/papyros.db.tar.gz ' +
                             '../../built_packages/{0}'.format(pkg)))
@@ -139,6 +140,48 @@ class ArchPackage(CleanChrootAction):
             return {u'step': u'failed'}
         else:
             return {u'step': u'built'}
+
+
+class PushRepositoryChanges(buildstep.ShellMixin, steps.BuildStep):
+    name = "push_changes"
+
+    def __init__(self, arch, **kwargs):
+        self.arch = arch 
+        kwargs = self.setupShellMixin(kwargs, prohibitArgs=['command'])
+        steps.BuildStep.__init__(self, **kwargs)
+
+    @defer.inlineCallbacks
+    def run(self):
+        log = yield self.addLog('logs')
+
+        # Get a list of already built packages
+
+        cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
+                command='git add "./*PKGBUILD"')
+        yield self.runCommand(cmd)
+        if cmd.didFail():
+            defer.returnValue(FAILURE)
+
+        cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
+                command='git commit --allow-empty -m "Build {} at {} for {}'.format(
+                    self.build.number, time.strftime("%c"), self.arch))
+        yield self.runCommand(cmd)
+        if cmd.didFail():
+            defer.returnValue(FAILURE)
+
+        cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
+                command='git push')
+        yield self.runCommand(cmd)
+        if cmd.didFail():
+            defer.returnValue(FAILURE)
+
+        defer.returnValue(SUCCESS)
+
+    def getCurrentSummary(self):
+        return {u'step': u'pushing'}
+
+    def getResultSummary(self):
+        return {u'step': u'pushed'}
 
 
 class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
@@ -269,3 +312,82 @@ class ArchRepositoryFactory(util.BuildFactory):
         self.addStep(CleanChrootAction(arch, 'u'))
         self.addStep(ScanRepository(arch))
         self.addStep(steps.DirectoryUpload('built_packages', '/srv/http/repos/papyros/' + arch))
+        self.addStep(PushRepositoryChanges(arch))
+
+
+class ArchBuildGitPoller(changes.GitPoller):
+    def __init__(self, repourl, branches=None, branch=None,
+                 workdir=None, pollInterval=10 * 60,
+                 gitbin='git', usetimestamps=True,
+                 category=None, project=None,
+                 pollinterval=-2, fetch_refspec=None,
+                 encoding='utf-8', name=None, pollAtLaunch=False,
+                 ignored_authors=[]):
+        changes.GitPoller.__init__(self,repourl,branches,branch,
+                workdir, pollInterval, gitbin, usetimestamps,
+                category, project, pollinterval, fetch_refspec,
+                encoding, name, pollAtLaunch)
+        self.ignored_authors = ignored_authors
+
+    @defer.inlineCallbacks
+    def _process_changes(self, newRev, branch):
+        """
+        Read changes since last change.
+        - Read list of commit hashes.
+        - Extract details from each commit.
+        - Add changes to database.
+        """
+
+        # initial run, don't parse all history
+        if not self.lastRev:
+            return
+        if newRev in self.lastRev.values():
+            # TODO: no new changes on this branch
+            # should we just use the lastRev again, but with a different branch?
+            pass
+
+        # get the change list
+        revListArgs = ([r'--format=%H', r'%s' % newRev] +
+                       [r'^%s' % rev for rev in self.lastRev.values()] +
+                       [r'--'])
+        self.changeCount = 0
+        results = yield self._dovccmd('log', revListArgs, path=self.workdir)
+
+        # process oldest change first
+        revList = results.split()
+        revList.reverse()
+        self.changeCount = len(revList)
+        self.lastRev[branch] = newRev
+
+        if self.changeCount:
+            log.msg('gitpoller: processing %d changes: %s from "%s" branch "%s"'
+                    % (self.changeCount, revList, self.repourl, branch))
+
+        for rev in revList:
+            dl = defer.DeferredList([
+                self._get_commit_timestamp(rev),
+                self._get_commit_author(rev),
+                self._get_commit_files(rev),
+                self._get_commit_comments(rev),
+            ], consumeErrors=True)
+
+            results = yield dl
+
+            # check for failures
+            failures = [r[1] for r in results if not r[0]]
+            if failures:
+                # just fail on the first error; they're probably all related!
+                raise failures[0]
+
+            timestamp, author, files, comments = [r[1] for r in results]
+
+            if author in self.ignored_authors:
+                continue
+
+            yield self.master.data.updates.addChange(
+                author=author, revision=ascii2unicode(rev), files=files,
+                comments=comments, when_timestamp=timestamp,
+                branch=ascii2unicode(self._removeHeads(branch)),
+                project=self.project, repository=ascii2unicode(self.repourl),
+                category=self.category, src=u'git')
+
