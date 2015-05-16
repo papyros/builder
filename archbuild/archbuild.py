@@ -164,8 +164,7 @@ class ArchPackage(CleanChrootAction):
 class PushRepositoryChanges(buildstep.ShellMixin, steps.BuildStep):
     name = "push_changes"
 
-    def __init__(self, arch, **kwargs):
-        self.arch = arch 
+    def __init__(self, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=['command'])
         steps.BuildStep.__init__(self, **kwargs)
 
@@ -182,8 +181,8 @@ class PushRepositoryChanges(buildstep.ShellMixin, steps.BuildStep):
             defer.returnValue(FAILURE)
 
         cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
-                command='git commit --allow-empty -m "Build {} at {} for {}"'.format(
-                    self.build.number, time.strftime("%c"), self.arch))
+                command='git commit --allow-empty -m "Build {} at {}"'.format(
+                    self.build.number, time.strftime("%c")))
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
@@ -331,7 +330,9 @@ class ArchRepositoryFactory(util.BuildFactory):
         self.addStep(CleanChrootAction(arch, 'u'))
         self.addStep(ScanRepository(arch))
         self.addStep(steps.DirectoryUpload('built_packages', '/srv/http/repos/papyros/' + arch))
-        self.addStep(PushRepositoryChanges(arch))
+        self.addStep(steps.MasterShellCommand(command="chmod a+rX -R /srv/http/repos/papyros"))
+        if arch == 'x86_64':
+            self.addStep(PushRepositoryChanges())
 
 
 class GitPoller(changes.GitPoller):
