@@ -64,26 +64,33 @@ class ArchPackage(CleanChrootAction):
         yield log.addStdout(u'Provides: {}\n'.format(self.provides))
         yield log.addStdout(u'Dependencies: {}\n'.format(self.depends))
 
+        # Get the latest package version and check if it has already been built
+
         cmd = yield self.makeRemoteShellCommand(collectStdout=True, stdioLogName=None,
                 command=['pkgver', '--latest'])
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
-        # /srv/http/repos/papyros/x86_64/greenisland-git-20150428.e41b7b3-1-x86_64.pkg.tar.xz
         self.latest_version = cmd.stdout.strip()
-        yield log.addStdout(u'Latest version: {}\n'.format(self.latest_version))
-
+        
         self.package_file = self.package + '-' + self.latest_version + '-' + self.arch + '.pkg.tar.xz'
+        
+        yield log.addStdout(u'Latest version: {}\n'.format(self.latest_version))
         yield log.addStdout(u'Package file: {}\n'.format(self.package_file))
 
         if self.alreadyBuilt():
             self.current = True
-            yield log.addStdout(u'Package already built!\n')
+            yield log.addStdout(u'Package already built, skipping!\n')
         else:
+
+            # Build the package
+
             cmd = yield self.makeCCMCommand('s')
             yield self.runCommand(cmd)
             if cmd.didFail():
                 defer.returnValue(FAILURE)
+
+            # Collect the built package artifacts
 
             cmd = yield self.makeRemoteShellCommand(collectStdout=True,
                 command='ls')
@@ -100,13 +107,15 @@ class ArchPackage(CleanChrootAction):
 
             yield log.addStdout(u'Built the following packages: {}\n'.format(self.artifacts))
 
+            # Copy the built packages
+                
             for pkg in self.artifacts:
-                # Copy the built packages
                 cmd = yield self.makeRemoteShellCommand(collectStdout=True,
                     command=('cp {0} ../../built_packages'.format(pkg)))
                 yield self.runCommand(cmd)
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
+                    
                 cmd = yield self.makeRemoteShellCommand(collectStdout=True,
                     command=('repo-add ../../built_packages/papyros.db.tar.gz ' +
                             '../../built_packages/{0}'.format(pkg)))
@@ -144,10 +153,10 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
         steps.BuildStep.__init__(self, **kwargs)
 
     @defer.inlineCallbacks
-    def run(self):  ## new style
+    def run(self):
         log = yield self.addLog('logs')
 
-        # Get already built packages
+        # Get a list of already built packages
 
         cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
                 command=['ls', 'built_packages'])
@@ -158,7 +167,7 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
         prebuilt_packages = cmd.stdout.split()
         self.setProperty("existing_packages", prebuilt_packages, "Repository Scan")
 
-        # Generate a list of packages
+        # Generate a list of packages to build
 
         cmd = yield self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
                 command=['find', '-name', 'PKGBUILD', '-printf', '%h\\n'])
@@ -166,9 +175,9 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
         if cmd.didFail():
             defer.returnValue(FAILURE)
 
-        # Create steps for the packages
-
         self.pkgs = [os.path.basename(path) for path in cmd.stdout.split()]
+
+        # Get dependencies and provides for all the packages
 
         pkg_info = []
         
@@ -199,6 +208,7 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
             })
 
         # Update the list of dependencies for each package, removing system-provided ones
+
         for job in pkg_info:
             new_deps = []
             for dep in job['depends']:
@@ -222,6 +232,8 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
 
         sorted_package_names = nx.topological_sort(graph)
 
+        # Create package build steps for the sorted package list
+
         steps = []
 
         for name in sorted_package_names:
@@ -234,10 +246,10 @@ class ScanRepository(buildstep.ShellMixin, steps.BuildStep):
         self.build.addStepsAfterCurrentStep(steps)
         self.setProperty("packages", sorted_package_names, "Repository Scan")
 
-        log.finish()
+        # Warn if no packages found
 
         if len(self.pkgs) == 0:
-            defer.returnValue(WARNINGS)  # Warn if no packages found
+            defer.returnValue(WARNINGS)  
         else:
             defer.returnValue(SUCCESS)
 
