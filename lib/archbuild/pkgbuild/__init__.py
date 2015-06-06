@@ -49,6 +49,10 @@ class RepositoryFactory(BuildFactory):
         self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
         # Scan repository and find packages to build
         self.addStep(RepositoryScan(arch=arch))
+        # Publish the repository
+        self.addStep(steps.MasterShellCommand(command="rm -R /srv/http/repos/papyros/" + arch))
+        self.addStep(steps.DirectoryUpload('../repository', '/srv/http/repos/papyros/' + arch))
+        self.addStep(steps.MasterShellCommand(command="chmod a+rX -R /srv/http/repos/papyros"))
         # Push back changes to version control (only push for x86_64 so we don't have duplicates)
         if arch == "x86_64":
             self.addStep(PushSourceChanges())
