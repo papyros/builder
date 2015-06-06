@@ -23,7 +23,7 @@ BUILDBOT_SLAVE=~/slave1
 
 cd ~/archbuild
 
-git pull
+git fetch && git reset --hard origin/master
 cp -f master.cfg $BUILDBOT_MASTER/
 rsync -az --delete helpers $BUILDBOT_MASTER/ || exit $?
 export PYTHONPATH=~/archbuild/lib
