@@ -1,8 +1,8 @@
 #
-# This file is part of Hawaii.
+# Archbuild - Buildbot configuration for Papyros
 #
-# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 # Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
+# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,10 +55,10 @@ class BinaryPackageBuild(CcmAction):
         yield log.addStdout(u"Provides: {}\n".format(self.provides))
 
         # Package directory
-        workdir = os.path.join(self.workdir, self.pkgname)
+        workdir = os.path.join(self.workdir, 'packages', self.pkgname)
 
         # Check whether we already built the latest version
-        cmd = yield self._makeCommand("../../helpers/pkgversion -l PKGBUILD", workdir=workdir)
+        cmd = yield self._makeCommand("../../../helpers/pkgversion -l PKGBUILD", workdir=workdir)
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
@@ -97,14 +97,15 @@ class BinaryPackageBuild(CcmAction):
                 yield log.addStdout(u"Building from chroot: {}\n".format(chrootdir))
 
                 # Actually build the package
-                repodir = os.path.join(self.workdir, "..", "repository")
+                repodir = os.path.join(self.workdir, "..", "..", "repository")
                 cmd = yield self._makeCommand("sudo makechrootpkg -cu -D {}:/var/tmp/repository -r {}".format(repodir, chrootdir), workdir=workdir)
                 yield self.runCommand(cmd)
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
 
             # Find the artifacts
-            cmd = yield self._makeCommand(["/usr/bin/find", ".", "-type", "f", "-name", "*.pkg.tar.xz", "-printf", "%f "], workdir=workdir)
+            cmd = yield self._makeCommand(["/usr/bin/find", ".", "-type", "f", 
+                    "-name", "*.pkg.tar.xz", "-printf", "%f "], workdir=workdir)
             yield self.runCommand(cmd)
             if cmd.didFail():
                 defer.returnValue(FAILURE)
@@ -128,12 +129,12 @@ class BinaryPackageBuild(CcmAction):
 
             # Copy the artifacts
             for artifact in self.artifacts:
-                cmd = yield self._makeCommand("/usr/bin/cp -f {}/{} ../repository".format(self.pkgname, artifact))
+                cmd = yield self._makeCommand("/usr/bin/cp -f packages/{}/{} ../repository".format(self.pkgname, artifact))
                 yield self.runCommand(cmd)
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
 
-                cmd = yield self._makeCommand("repo-add ../repository/repository.db.tar.gz " +
+                cmd = yield self._makeCommand("repo-add ../repository/papyros.db.tar.gz " +
                                               "../repository/{}".format(artifact))
                 yield self.runCommand(cmd)
                 if cmd.didFail():

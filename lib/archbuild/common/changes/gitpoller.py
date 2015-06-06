@@ -304,7 +304,7 @@ class GitPoller(base.PollingChangeSource, StateMixin):
 
             timestamp, author, files, comments = [r[1] for r in results]
 
-            if authors in self.ignoredAuthors:
+            if author in self.ignoredAuthors:
                 continue
 
             yield self.master.data.updates.addChange(

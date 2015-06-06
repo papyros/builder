@@ -2,7 +2,6 @@
 # Archbuild - Buildbot configuration for Papyros
 #
 # Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
-# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,13 +26,22 @@ from chrootactions import *
 from repoactions import *
 from sourceactions import *
 
-class RepositoryFactory(BuildFactory):
+class OSTreeCommitFactory(BuildFactory):
     """
     Factory to build a repository of packages for a certain architecture.
     """
 
     def __init__(self, sources, arch):
         BuildFactory.__init__(self, sources)
+
+        # Copy the channel configuration from slave to master
+        self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
+
+        self.addStep(PacstrapCreate())
+        self.addStep(OSTreeInitImage())
+        self.addStep(PacstrapSetup())
+        self.addStep(PostInstall())
+        self.addStep(OSTreeCommit())
 
         # Download the helpers
         for helper in ("pkgdepends", "pkgprovides", "pkgversion", "ccm-setup"):
@@ -45,8 +53,10 @@ class RepositoryFactory(BuildFactory):
         self.addStep(steps.MakeDirectory(name="mkdir-repository", dir="repository"))
         # Create or update the chroot
         self.addStep(PrepareCcm(arch=arch))
+        # Copy the channel configuration from slave to master
+        self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
         # Scan repository and find packages to build
-        self.addStep(RepositoryScan(arch=arch))
+        self.addStep(RepositoryScan(channel="ci", arch=arch))
         # Push back changes to version control (only push for x86_64 so we don't have duplicates)
         if arch == "x86_64":
             self.addStep(PushSourceChanges())

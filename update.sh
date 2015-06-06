@@ -19,9 +19,13 @@
 #
 
 BUILDBOT_MASTER=~/master
+BUILDBOT_SLAVE=~/slave1
 
 cd ~/archbuild
 
 git pull
-cp master.cfg $BUILDBOT_MASTER/
+cp -f master.cfg $BUILDBOT_MASTER/
+rsync -az --delete helpers $BUILDBOT_MASTER/ || exit $?
+export PYTHONPATH=~/archbuild/lib
 buildbot restart $BUILDBOT_MASTER
+buildslave restart $BUILDBOT_SLAVE

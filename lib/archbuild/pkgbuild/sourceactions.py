@@ -1,8 +1,8 @@
 #
-# This file is part of Hawaii.
+# Archbuild - Buildbot configuration for Papyros
 #
-# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 # Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
+# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,9 +50,10 @@ class PushSourceChanges(ShellMixin, BuildStep):
             defer.returnValue(FAILURE)
 
         # Commit
-        author = "Buildbot <buildbot@hawaiios.org>"
+        author = "Buildbot <buildbot@papyros.io>"
         msg = "Build {} at {}".format(self.build.number, time.strftime("%c"))
-        cmd = yield self._makeCommand(["git", "commit", "-m", msg, "--author=" + author])
+        cmd = yield self._makeCommand(["git", "commit", "--allow-empty", 
+                "-m", msg, "--author=" + author])
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
