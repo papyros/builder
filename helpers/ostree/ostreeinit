@@ -19,12 +19,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgbuild=$1
+set -e
 
-if [ -z "$pkgbuild" ]; then
-    echo "Usage: $0 <path to PKGBUILD>"
-    exit 1
-fi
+arch=$1
+os_dir=$2
 
-source $pkgbuild
-echo ${depends[@]}
+kernel_version=$(pacman -r "$os_dir" -Q linux | cut -d' ' -f 2)-ARCH
+
+linux$arch systemd-nspawn -D "$os_dir" \
+    mkinitcpio -c /etc/ostree-mkinitcpio.conf -g /boot/initramfs-linux.img \
+        -k $kernel_version -S autodetect
+
+boot_dir="$os_dir"/boot
+
+rm -f "$boot_dir"/initramfs-linux-fallback.img
+
+checksum=$(cat "$boot_dir"/initramfs-* "$boot_dir"/vmlinuz-* | \
+           sha256sum | cut -d' ' -f 1)
+
+mv "$boot_dir"/initramfs-*.img "$boot_dir"/initramfs-$checksum
+mv "$boot_dir"/vmlinuz-* "$boot_dir"/vmlinuz-$checksum

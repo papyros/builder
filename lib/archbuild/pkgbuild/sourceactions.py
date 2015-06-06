@@ -37,7 +37,7 @@ class PushSourceChanges(ShellMixin, BuildStep):
 
     def __init__(self, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
-        BuildStep.__init__(self, **kwargs)
+        BuildStep.__init__(self, haltOnFailure=True, **kwargs)
 
     @defer.inlineCallbacks
     def run(self):

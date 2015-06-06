@@ -40,7 +40,7 @@ class RepositoryScan(ShellMixin, BuildStep):
 
     def __init__(self, arch, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
-        BuildStep.__init__(self, **kwargs)
+        BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
 
     @defer.inlineCallbacks
@@ -108,7 +108,8 @@ class RepositoryScan(ShellMixin, BuildStep):
         names = [pkg["name"] for pkg in pkg_info]
         
         for name in self.packages:
-            self._markRequired(pkg_info, names, name)
+            if name in names:
+                self._markRequired(pkg_info, names, name)
 
         # Sort packages based on their dependencies
         graph = nx.DiGraph()

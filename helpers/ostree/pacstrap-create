@@ -19,12 +19,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgbuild=$1
+set -e
 
-if [ -z "$pkgbuild" ]; then
-    echo "Usage: $0 <path to PKGBUILD>"
+arch=$1
+conf_file=$2
+install_dir=$3
+
+if [ -z "$install_dir" ]; then
+    echo "Usage: $0 <path to pacstrap dir>"
     exit 1
 fi
 
-source $pkgbuild
-echo ${depends[@]}
+shift 3
+
+rm -rf $install_dir
+mkdir -p $install_dir
+chmod a+rX $install_dir
+
+linux$arch pacstrap -dcC $conf_file $install_dir base base-devel $@

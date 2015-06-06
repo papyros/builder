@@ -22,41 +22,40 @@ from buildbot.steps.shell import ShellCommand
 from buildbot.steps.source.git import Git
 from buildbot.plugins import steps
 
-from chrootactions import *
-from repoactions import *
-from sourceactions import *
+from pacstrapactions import *
+from ostreeactions import *
 
-class OSTreeCommitFactory(BuildFactory):
+class RepositoryFactory(BuildFactory):
     """
     Factory to build a repository of packages for a certain architecture.
     """
 
-    def __init__(self, sources, arch):
+    def __init__(self, sources, arch, ostree_lock):
         BuildFactory.__init__(self, sources)
 
-        # Copy the channel configuration from slave to master
-        self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
-
-        self.addStep(PacstrapCreate())
-        self.addStep(OSTreeInitImage())
-        self.addStep(PacstrapSetup())
-        self.addStep(PostInstall())
-        self.addStep(OSTreeCommit())
-
         # Download the helpers
-        for helper in ("pkgdepends", "pkgprovides", "pkgversion", "ccm-setup"):
+        for helper in ('pacstrap-create', 'ostreeinit', 'ostreesetup', 'post-install', 'post-commit'):
             self.addStep(steps.FileDownload(name="helper " + helper,
-                                            mastersrc="helpers/pkgbuild/" + helper,
+                                            mastersrc="helpers/ostree/" + helper,
                                             slavedest="../helpers/" + helper,
                                             mode=0755))
-        # Create a directory to hold the packages that have been built
-        self.addStep(steps.MakeDirectory(name="mkdir-repository", dir="repository"))
-        # Create or update the chroot
-        self.addStep(PrepareCcm(arch=arch))
+        
         # Copy the channel configuration from slave to master
         self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
-        # Scan repository and find packages to build
-        self.addStep(RepositoryScan(channel="ci", arch=arch))
-        # Push back changes to version control (only push for x86_64 so we don't have duplicates)
-        if arch == "x86_64":
-            self.addStep(PushSourceChanges())
+
+        self.addStep(PacstrapCreate(arch))
+        self.addStep(CreateInitImage(arch))
+        self.addStep(FilesystemSetup(arch))
+        self.addStep(PostInstall(arch))
+        # TODO: Support stable channels as well
+        # TODO: Support different versions (developer or plain runtime) too
+        self.addStep(CommitTree(arch, 'papyros/testing/{arch}/runtime'.format(arch=arch), 
+        		'/srv/http/ostree', locks=[ostree_lock.access('exclusive')])) 
+
+        # NOTE: We commit directly to the OSTree repo on the server because the upload
+        #       step takes so long and we are running the slave on the same machine as the master 
+        # Publish to the server
+        # self.addStep(steps.MasterShellCommand(command="rm -rf /srv/http/ostree/papyros/" + arch))
+        # self.addStep(steps.DirectoryUpload('../ostree', '/srv/http/ostree/papyros/' + arch))
+        #self.addStep(steps.MasterShellCommand(command="chmod a+rX -R /srv/http/ostree/papyros"))
+

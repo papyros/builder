@@ -19,12 +19,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgbuild=$1
+set -e
 
-if [ -z "$pkgbuild" ]; then
-    echo "Usage: $0 <path to PKGBUILD>"
-    exit 1
-fi
+arch=$1
+channel_dir=$2
+os_dir=$3
 
-source $pkgbuild
-echo ${depends[@]}
+mkdir -p "$os_dir"/etc
+
+# Set up the os-release file
+cp "$channel_dir"/os-release "$os_dir"/etc/os-release
+
+# Copy the post-install setup file and run it
+cp "$channel_dir"/post-install "$os_dir"/post-install
+chmod +x "$os_dir"/post-install
+
+systemd-nspawn -D "$os_dir" /post-install
+
+rm "$os_dir"/post-install

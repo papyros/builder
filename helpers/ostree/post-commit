@@ -19,12 +19,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgbuild=$1
+set -e
 
-if [ -z "$pkgbuild" ]; then
-    echo "Usage: $0 <path to PKGBUILD>"
+ostree_dir=$1
+
+if [ -z "$ostree_dir" ]; then
+    echo "Usage: $0 <path to ostree dir>"
     exit 1
 fi
 
-source $pkgbuild
-echo ${depends[@]}
+chown -R buildbot:buildbot $ostree_dir
+chmod -R a+rX $ostree_dir

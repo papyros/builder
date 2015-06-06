@@ -19,12 +19,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgbuild=$1
+set -e
 
-if [ -z "$pkgbuild" ]; then
-    echo "Usage: $0 <path to PKGBUILD>"
-    exit 1
-fi
+os_dir=$1
 
-source $pkgbuild
-echo ${depends[@]}
+rm "$os_dir"/etc/pacman.d/gnupg/S.gpg-agent
+
+mkdir -p "$os_dir"/usr/etc/
+mkdir "$os_dir"/sysroot
+rmdir "$os_dir"/{home,opt,root,mnt}
+rm -rf "$os_dir"/srv
+rsync -av "$os_dir"/etc "$os_dir"/usr/etc/
+rm -rf "$os_dir"/etc
+
+ln -s sysroot/ostree "$os_dir"/ostree
+ln -s sysroot/tmp "$os_dir"/tmp
+ln -s var/home "$os_dir"/home
+ln -s var/roothome "$os_dir"/root
+
+chmod a+rX "$os_dir"/{bin,boot,lib,sysroot,usr,var}
+
+cat << EOF > "$os_dir"/usr/etc/fstab
+LABEL=$OSNAME-boot /boot ext4 rw,relatime,data=ordered 0 2
+LABEL=$OSNAME-root / ext4 rw,relatime,data=ordered 0 1
+EOF
+
+cat << EOF > "$os_dir"/usr/lib/tmpfiles.d/ostree.conf
+d /var/log/journal 0755 root root -
+L /var/home - - - - ../sysroot/home
+d /var/roothome 0700 root root -
+d /var/lib 0755 root root -
+EOF
