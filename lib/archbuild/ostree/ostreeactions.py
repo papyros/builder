@@ -34,16 +34,18 @@ class CreateInitImage(ShellMixin, BuildStep):
     name = "ostreeinit"
     description = "Create the OSTree init files"
 
-    def __init__(self, arch, **kwargs):
+    def __init__(self, arch, channel, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
+        self.channel = channel
 
     @defer.inlineCallbacks
     def run(self):
         # Create the pacstrap instance
         cmd = yield self._makeCommand(['sudo', '../helpers/ostreeinit', 
-            '32' if self.arch == 'i686' else '64', '../pacstrap-' + self.arch])
+            '32' if self.arch == 'i686' else '64', 
+            '../pacstrap-' + self.arch + '-' + self.channel])
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
@@ -61,15 +63,17 @@ class FilesystemSetup(ShellMixin, BuildStep):
     name = "setup"
     description = "Set up directories"
 
-    def __init__(self, arch, **kwargs):
+    def __init__(self, arch, channel, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
+        self.channel = channel
 
     @defer.inlineCallbacks
     def run(self):
         # Create the pacstrap instance
-        cmd = yield self._makeCommand(['sudo', '../helpers/ostreesetup', '../pacstrap-' + self.arch])
+        cmd = yield self._makeCommand(['sudo', '../helpers/ostreesetup', 
+            '../pacstrap-' + self.arch + '-' + self.channel])
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
@@ -88,10 +92,11 @@ class CommitTree(ShellMixin, BuildStep):
     name = "commit"
     description = "Commit tree to OSTree"
 
-    def __init__(self, arch, channel, ostree_dir, **kwargs):
+    def __init__(self, arch, branch, channel, ostree_dir, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
+        self.branch = branch
         self.channel = channel
         self.ostree_dir = ostree_dir
 
@@ -108,7 +113,9 @@ class CommitTree(ShellMixin, BuildStep):
                 defer.returnValue(FAILURE)
 
         cmd = yield self._makeCommand(['sudo', 'ostree', '--repo=' + self.ostree_dir, 'commit',
-                    '--tree=dir=../pacstrap-' + self.arch, '--branch=' + self.channel,
+                    '--tree=dir=../pacstrap-' + self.arch + '-' + self.channel, 
+                    '--branch=papyros/{branch}/{arch}/{channel}'
+                            .format(branch=self.branch,arch=self.arch,channel=self.channel),
                     '--subject', 'Build {} at {}'.format(self.build.number, time.strftime("%c"))])
         yield self.runCommand(cmd)
         if cmd.didFail():

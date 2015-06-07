@@ -27,6 +27,8 @@ from buildbot.status.results import *
 
 from twisted.internet import defer
 
+from archbuild.common import utils
+
 from pkgactions import BinaryPackageBuild
 
 class RepositoryScan(ShellMixin, BuildStep):
@@ -48,8 +50,17 @@ class RepositoryScan(ShellMixin, BuildStep):
         log = yield self.addLog("logs")
 
         # Find out which packages are meant for this channel
-        config = self._loadYaml("tmp/channel.yml")
-        self.packages = config.get('packages', {})
+        config = utils.loadYaml("tmp/channels.yml")
+
+        self.packages = []
+        channels = config.get('channels', {})
+
+        for channel in channels:
+            packages = config.get('channels', {}).get(channel, {}).get('packages', [])
+            if len(self.packages) == 0:
+                self.packages = packages
+            else:
+                self.packages = utils.union(self.packages, packages)
 
         # Make a list of packages that have been built already
         cmd = yield self._makeCommand(["/usr/bin/find", "../repository", 
@@ -168,12 +179,3 @@ class RepositoryScan(ShellMixin, BuildStep):
             pkg['required'] = True
             for dep in pkg['depends']:
                 self._markRequired(pkg_info, names, dep)
-
-    def _loadYaml(self, fileName):
-        from yaml import load
-        try:
-            from yaml import CLoader as Loader
-        except ImportError:
-            from yaml import Loader
-        stream = open(fileName, "r")
-        return load(stream, Loader=Loader)

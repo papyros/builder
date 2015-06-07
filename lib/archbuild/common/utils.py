@@ -1,8 +1,8 @@
 #
-# This file is part of Hawaii.
+# Archbuild - Buildbot configuration for Papyros
 #
-# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
-#
+# Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
+# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -25,3 +25,7 @@ def loadYaml(fileName):
         from yaml import Loader
     stream = open(fileName, "r")
     return load(stream, Loader=Loader)
+
+def union(a, b):
+    """ return the union of two lists """
+    return list(set(a) | set(b))

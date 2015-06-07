@@ -34,18 +34,19 @@ class PacstrapCreate(ShellMixin, BuildStep):
     name = "pacstrap"
     description = "Create a basic Arch installation"
 
-    def __init__(self, arch, **kwargs):
+    def __init__(self, arch, channel, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
+        self.channel = channel
 
     @defer.inlineCallbacks
     def run(self):
         log = yield self.addLog("logs")
 
         # Find out which packages are meant for this channel
-        config = utils.loadYaml("tmp/channel.yml")
-        self.packages = config.get('packages', {})
+        config = utils.loadYaml("tmp/channels.yml")
+        self.packages = config.get('channels', {}).get(self.channel, {}).get('packages', [])
 
         yield log.addStdout(u"Creating pacstrap with the following packages:\n\t{}\n"
                 .format("\n\t".join(self.packages)))
@@ -53,7 +54,7 @@ class PacstrapCreate(ShellMixin, BuildStep):
         # Create the pacstrap instance
         cmd = yield self._makeCommand(['sudo', '../helpers/pacstrap-create', 
                 '32' if self.arch == 'i686' else '64',
-                'pacman.conf', '../pacstrap-' + self.arch] + self.packages)
+                'pacman.conf', '../pacstrap-' + self.arch + '-' + self.channel] + self.packages)
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
@@ -71,16 +72,18 @@ class PostInstall(ShellMixin, BuildStep):
     name = "post-install"
     description = "Post installation setup"
 
-    def __init__(self, arch, **kwargs):
+    def __init__(self, arch, channel, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
+        self.channel = channel
 
     @defer.inlineCallbacks
     def run(self):
         # Create the pacstrap instance
         cmd = yield self._makeCommand(['sudo', '../helpers/post-install', 
-                '32' if self.arch == 'i686' else '64', '.', '../pacstrap-' + self.arch])
+                '32' if self.arch == 'i686' else '64', '.', 
+                '../pacstrap-' + self.arch + '-' + self.channel])
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)

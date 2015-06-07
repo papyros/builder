@@ -22,8 +22,7 @@ from buildbot.steps.shell import ShellCommand
 from buildbot.steps.source.git import Git
 from buildbot.plugins import steps
 
-from pacstrapactions import *
-from ostreeactions import *
+from channelactions import *
 
 class RepositoryFactory(BuildFactory):
     """
@@ -41,16 +40,9 @@ class RepositoryFactory(BuildFactory):
                                             mode=0755))
         
         # Copy the channel configuration from slave to master
-        self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
+        self.addStep(steps.FileUpload("channels.yml", "tmp/channels.yml", name="config-upload"))
 
-        self.addStep(PacstrapCreate(arch))
-        self.addStep(CreateInitImage(arch))
-        self.addStep(FilesystemSetup(arch))
-        self.addStep(PostInstall(arch))
-        # TODO: Support stable channels as well
-        # TODO: Support different versions (developer or plain runtime) too
-        self.addStep(CommitTree(arch, 'papyros/testing/{arch}/runtime'.format(arch=arch), 
-        		'/srv/http/ostree', locks=[ostree_lock.access('exclusive')])) 
+        self.addStep(ScanChannels(arch, ostree_lock=ostree_lock))
 
         # NOTE: We commit directly to the OSTree repo on the server because the upload
         #       step takes so long and we are running the slave on the same machine as the master 

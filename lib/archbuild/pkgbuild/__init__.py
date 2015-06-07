@@ -46,7 +46,7 @@ class RepositoryFactory(BuildFactory):
         # Create or update the chroot
         self.addStep(PrepareCcm(arch=arch))
         # Copy the channel configuration from slave to master
-        self.addStep(steps.FileUpload("channel.yml", "tmp/channel.yml", name="config-upload"))
+        self.addStep(steps.FileUpload("channels.yml", "tmp/channels.yml", name="config-upload"))
         # Scan repository and find packages to build
         self.addStep(RepositoryScan(arch=arch))
         # Publish the repository
