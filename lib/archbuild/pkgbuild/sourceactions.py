@@ -44,14 +44,15 @@ class PushSourceChanges(ShellMixin, BuildStep):
         log = yield self.addLog("logs")
 
         # Add PKGBUILD
-        cmd = yield self._makeCommand("git add ./*PKGBUILD")
+        cmd = yield self._makeCommand("git add ./*PKGBUILD buildinfo.yml")
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
 
         # Commit
         author = "Buildbot <buildbot@papyros.io>"
-        msg = "Build {} at {}".format(self.build.number, time.strftime("%c"))
+        changelog = self.getProperty('changelog')
+        msg = "Build {} at {}\n\n{}".format(self.build.number, time.strftime("%c"), changelog)
         cmd = yield self._makeCommand(["git", "commit", "--allow-empty", 
                 "-m", msg, "--author=" + author])
         yield self.runCommand(cmd)

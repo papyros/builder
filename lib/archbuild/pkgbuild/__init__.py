@@ -36,7 +36,8 @@ class RepositoryFactory(BuildFactory):
         BuildFactory.__init__(self, sources)
 
         # Download the helpers
-        for helper in ("pkgdepends", "pkgprovides", "pkgversion", "ccm-setup"):
+        for helper in ("pkgdepends", "pkgprovides", "pkgversion", "ccm-setup", 
+                "changelog", "gitrev"):
             self.addStep(steps.FileDownload(name="helper " + helper,
                                             mastersrc="helpers/pkgbuild/" + helper,
                                             slavedest="../helpers/" + helper,
@@ -47,8 +48,13 @@ class RepositoryFactory(BuildFactory):
         self.addStep(PrepareCcm(arch=arch))
         # Copy the channel configuration from slave to master
         self.addStep(steps.FileUpload("channels.yml", "tmp/channels.yml", name="config-upload"))
+        self.addStep(steps.FileUpload("buildinfo.yml", "tmp/buildinfo.yml", name="buildinfo-upload"))
         # Scan repository and find packages to build
         self.addStep(RepositoryScan(arch=arch))
+        # Create a changelog for the repo
+        self.addStep(Changelog(arch=arch))
+        self.addStep(steps.FileDownload(mastersrc="tmp/buildinfo.yml", slavedest="buildinfo.yml", 
+                name="buildinfo-download"))
         # Publish the repository
         self.addStep(steps.MasterShellCommand(command="rm -rf /srv/http/repos/papyros/" + arch))
         self.addStep(steps.DirectoryUpload('../repository', '/srv/http/repos/papyros/' + arch))

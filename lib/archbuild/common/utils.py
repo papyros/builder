@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import yaml
+
 def loadYaml(fileName):
     from yaml import load
     try:
@@ -25,6 +27,10 @@ def loadYaml(fileName):
         from yaml import Loader
     stream = open(fileName, "r")
     return load(stream, Loader=Loader)
+
+def saveYaml(fileName, data):
+	with open(fileName, 'w') as file:
+		file.write(yaml.dump(data, default_flow_style=False))
 
 def union(a, b):
     """ return the union of two lists """

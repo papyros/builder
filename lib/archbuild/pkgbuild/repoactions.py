@@ -19,6 +19,7 @@
 #
 
 import os.path
+import yaml
 
 import networkx as nx
 
@@ -179,3 +180,96 @@ class RepositoryScan(ShellMixin, BuildStep):
             pkg['required'] = True
             for dep in pkg['depends']:
                 self._markRequired(pkg_info, names, dep)
+
+class Changelog(ShellMixin, BuildStep):
+    """
+    """
+
+    name = "changelog"
+    description = "Create a changelog for the packages"
+    packages = []
+
+    def __init__(self, arch, **kwargs):
+        kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
+        BuildStep.__init__(self, haltOnFailure=True, **kwargs)
+        self.arch = arch
+
+    @defer.inlineCallbacks
+    def run(self):
+        log = yield self.addLog("logs")
+
+        changelog = ''
+
+        # Find out which packages are meant for this channel
+        buildinfo = utils.loadYaml("tmp/buildinfo.yml")
+
+        if buildinfo.get('packages') is None:
+            buildinfo['packages'] = {}
+
+        versions = buildinfo.get('packages')
+
+        packages = self.getProperty('packages')
+
+        yield log.addStdout(u"Generating changelogs for packages:\n\t{}\n".
+                format("\n\t".join(packages)))
+
+        for package in packages:
+            # Package directory
+            workdir = os.path.join(self.workdir, 'packages', package)
+
+            prev_ver = versions.get(package, '')
+
+            changes = ''
+
+            if prev_ver != '':
+                yield log.addStdout(u"Previous version for {} is {}\n".format(package, prev_ver))
+            
+                cmd = yield self._makeCommand(['../../../helpers/changelog', '-l', 
+                        'PKGBUILD', prev_ver], workdir=workdir)
+                yield self.runCommand(cmd)
+                if cmd.didFail():
+                    defer.returnValue(FAILURE)
+                changes = cmd.stdout
+
+            if len(changes) > 0:
+                changelog += package + '\n' + changes + '\n'
+                yield log.addStdout(u"{}:\n{}\n".format(package, changes))
+            else:
+                yield log.addStdout(u"{}:\n * No changes\n\n".format(package))
+
+            cmd = yield self._makeCommand("../../../helpers/gitrev -l PKGBUILD"
+                    .format(package), workdir=workdir)
+            yield self.runCommand(cmd)
+            if cmd.didFail():
+                defer.returnValue(FAILURE)
+            versions[package] = cmd.stdout.strip()
+
+            yield log.addStdout(u"New version for {} is {}\n".format(package, versions[package]))
+
+        changelog = changelog.strip()
+
+        if len(changelog) == 0:
+            changelog = 'No changes'
+
+        yield log.addStdout(u'Build info is:{}'.format(yaml.dump(buildinfo, default_flow_style=False)))
+
+        utils.saveYaml("tmp/buildinfo.yml", buildinfo)
+        self.setProperty('changelog', changelog, 'Changelog')
+
+        defer.returnValue(SUCCESS)
+
+    def getCurrentSummary(self):
+        return {"step": u"generating changelog"}
+
+    def getResultSummary(self):
+        return {"step": u"changelog built"}
+
+    def _makeCommand(self, args, **kwargs):
+        import types
+        if type(args) == types.StringType:
+            command = args.split(" ")
+        else:
+            command = args
+        return self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
+            command=command, **kwargs)
+
