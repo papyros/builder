@@ -20,6 +20,7 @@
 #
 
 set -e
+set -x
 
 arch=$1
 conf_file=$2

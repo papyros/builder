@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# Archbuild - Buildbot configuration for Papyros
+#
+# Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
+# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+set -e
+set -x
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+os_name=$1
+url=$2
+ostree_dir=$3
+branch=$4
+image_path=$5
+size=$6
+
+#----- Utility methods -----#
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+replace() {
+    sed s#"$1"#"$2"# < $3 > tmpfile && mv tmpfile $3
+}
+
+# Require that the command be run as root (via sudo)
+(( EUID != 0 )) && die "This script must be run as root."
+
+rm -f "$image_path"
+
+sudo -u buildbot truncate -s $size "$image_path"
+
+parted "$image_path" mklabel msdos
+parted "$image_path" mkpart primary ext4 0% 100%
+parted "$image_path" set 1 boot on
+
+losetup /dev/loop8 "$image_path" -o 1048576
+
+mkfs.ext4 /dev/loop8
+
+e2label /dev/loop8 $os_name
+
+sysroot=/mnt/$os_name
+
+mkdir -p "$sysroot"
+
+mount /dev/loop8 "$sysroot"
+
+$DIR/ostree-install -n $os_name -o "$ostree_dir" -u "$url" -b $branch "$sysroot"
+
+umount $sysroot
+
+losetup -d /dev/loop8
+
+dd bs=440 count=1 conv=notrunc \
+    if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"
+
+rm -f "$image_path".xz
+xz "$image_path"
+
+chmod -R a+r "$image_path".xz
+chown -R buildbot:buildbot "$image_path".xz

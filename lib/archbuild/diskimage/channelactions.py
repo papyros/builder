@@ -25,8 +25,7 @@ from buildbot.status.results import *
 from twisted.internet import defer
 
 from archbuild.common import utils
-from pacstrapactions import *
-from ostreeactions import *
+from imageactions import *
 
 class ScanChannels(ShellMixin, BuildStep):
     """
@@ -35,11 +34,10 @@ class ScanChannels(ShellMixin, BuildStep):
     name = "scan-channels"
     description = "Build all available channels"
 
-    def __init__(self, arch, ostree_lock, **kwargs):
+    def __init__(self, arch, **kwargs):
         kwargs = self.setupShellMixin(kwargs, prohibitArgs=["command"])
         BuildStep.__init__(self, haltOnFailure=True, **kwargs)
         self.arch = arch
-        self.ostree_lock = ostree_lock
 
     @defer.inlineCallbacks
     def run(self):
@@ -56,13 +54,7 @@ class ScanChannels(ShellMixin, BuildStep):
         steps = []
 
         for channel in channels:
-            steps.append(PacstrapCreate(self.arch, channel))
-            steps.append(CreateInitImage(self.arch, channel))
-            steps.append(PostInstall(self.arch, channel))
-            steps.append(FilesystemSetup(self.arch, channel))
-            # TODO: Support stable channels as well
-            steps.append(CommitTree(self.arch, 'testing', channel, 
-                    '/srv/http/ostree', locks=[self.ostree_lock.access('exclusive')])) 
+            steps.append(CreateDiskImage(self.arch, 'testing', channel))
 
         self.build.addStepsAfterCurrentStep(steps)
 

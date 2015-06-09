@@ -20,6 +20,7 @@
 #
 
 set -e
+set -x
 
 arch=$1
 channel_dir=$2

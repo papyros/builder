@@ -111,7 +111,7 @@ class BinaryPackageBuild(CcmAction):
                 defer.returnValue(FAILURE)
 
             # Add artifact to the list
-            r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(self.latest_version, self.arch))
+            r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(re.escape(self.latest_version), self.arch))
             self.artifacts = cmd.stdout.strip().split(" ")
             yield log.addStdout(u"Artifacts: {}\n".format(self.artifacts))
             matching_artifacts = filter(r.match, cmd.stdout.strip().split(" "))
