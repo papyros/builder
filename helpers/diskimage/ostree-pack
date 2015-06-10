@@ -30,6 +30,7 @@ ostree_dir=$3
 branch=$4
 image_path=$5
 size=$6
+arch=$7
 
 #----- Utility methods -----#
 
@@ -45,6 +46,18 @@ replace() {
 # Require that the command be run as root (via sudo)
 (( EUID != 0 )) && die "This script must be run as root."
 
+sysroot=/mnt/${os_name}_$arch
+
+if [ $arch == x86_64 ]; then
+	loop=/dev/loop8
+else
+	loop=/dev/loop9
+fi
+
+# Make sure the loop device is ready for use
+umount $loop || true # Ignore the return value
+losetup -d $loop || true # Ignore the return value
+
 rm -f "$image_path"
 
 sudo -u buildbot truncate -s $size "$image_path"
@@ -53,23 +66,21 @@ parted "$image_path" mklabel msdos
 parted "$image_path" mkpart primary ext4 0% 100%
 parted "$image_path" set 1 boot on
 
-losetup /dev/loop8 "$image_path" -o 1048576
+losetup $loop "$image_path" -o 1048576
 
-mkfs.ext4 /dev/loop8
+mkfs.ext4 $loop
 
-e2label /dev/loop8 $os_name
-
-sysroot=/mnt/$os_name
+e2label $loop $os_name
 
 mkdir -p "$sysroot"
 
-mount /dev/loop8 "$sysroot"
+mount $loop "$sysroot"
 
 $DIR/ostree-install -n $os_name -o "$ostree_dir" -u "$url" -b $branch "$sysroot"
 
 umount $sysroot
 
-losetup -d /dev/loop8
+losetup -d $loop
 
 dd bs=440 count=1 conv=notrunc \
     if=/usr/lib/syslinux/bios/mbr.bin of="$image_path"

@@ -59,7 +59,7 @@ class CreateDiskImage(ShellMixin, BuildStep):
             '/srv/http/images/{branch}/{arch}/{date}/papyros-{channel}.img'
                     .format(branch=self.branch,arch=self.arch,channel=self.channel,
                             date=time.strftime("%Y%m%d")), 
-            '10GB'], timeout=2400) # 40 minutes
+            '10GB', self.arch], timeout=2400) # 40 minutes
         yield self.runCommand(cmd)
         if cmd.didFail():
             defer.returnValue(FAILURE)
