@@ -43,6 +43,8 @@ class RepositoryFactory(BuildFactory):
                                             slavedest="../helpers/" + helper,
                                             mode=0755))
         # Create a directory to hold the packages that have been built
+        self.addStep(steps.RemoveDirectory(name="rm-repository", dir="repository"))
+        # Create a directory to hold the packages that have been built
         self.addStep(steps.MakeDirectory(name="mkdir-repository", dir="repository"))
         # Create or update the chroot
         self.addStep(PrepareCcm(arch=arch))

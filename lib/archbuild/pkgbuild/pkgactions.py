@@ -57,6 +57,15 @@ class BinaryPackageBuild(CcmAction):
         # Package directory
         workdir = os.path.join(self.workdir, 'packages', self.pkgname)
 
+        # Find the artifacts
+        cmd = yield self._makeCommand(["/usr/bin/find", ".", "-type", "f", 
+                "-name", "*.pkg.tar.xz", "-printf", "%f "], workdir=workdir)
+        yield self.runCommand(cmd)
+        if cmd.didFail():
+            defer.returnValue(FAILURE)
+
+        existing_packages = cmd.stdout.strip().split(" ")
+            
         # Check whether we already built the latest version
         cmd = yield self._makeCommand("../../../helpers/pkgversion -l PKGBUILD", workdir=workdir)
         yield self.runCommand(cmd)
@@ -74,14 +83,16 @@ class BinaryPackageBuild(CcmAction):
 
         # Already built packages
         r = re.compile(r'{}.*\-.*\-{}\.pkg\.tar\.xz'.format(self.pkgname, self.arch))
-        already_built_packages = filter(r.match, self.getProperty("existing_packages"))
+        already_built_packages = filter(r.match, existing_packages)
         yield log.addStdout(u"Existing packages: {}\n".format(already_built_packages))
 
         # Did we have this package already built?
-        r = re.compile(r'{}.*\-{}\-{}\.pkg\.tar\.xz'.format(self.pkgname, self.latest_version, self.arch))
-        already_built_same_version = filter(r.match, self.getProperty("existing_packages"))
+        r = re.compile(r'{}.*\-{}\-{}\.pkg\.tar\.xz'.format(self.pkgname, re.escape(self.latest_version), self.arch))
+        already_built_same_version = filter(r.match, existing_packages)
 
-        if len(already_built_same_version) > 0:
+        already_built = len(already_built_same_version) > 0
+
+        if already_built:
             self.current = True
             yield log.addStdout(u"Package already built, skipping!\n")
         else:
@@ -103,42 +114,38 @@ class BinaryPackageBuild(CcmAction):
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
 
-            # Find the artifacts
-            cmd = yield self._makeCommand(["/usr/bin/find", ".", "-type", "f", 
-                    "-name", "*.pkg.tar.xz", "-printf", "%f "], workdir=workdir)
+        # Find the artifacts
+        cmd = yield self._makeCommand(["/usr/bin/find", ".", "-type", "f", 
+                "-name", "*.pkg.tar.xz", "-printf", "%f "], workdir=workdir)
+        yield self.runCommand(cmd)
+        if cmd.didFail():
+            defer.returnValue(FAILURE)
+
+        self.all_artifacts = cmd.stdout.strip().split(" ")
+        yield log.addStdout(u"All packages: {}\n".format(self.all_artifacts))
+        
+        # Add artifact to the list
+        r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(re.escape(self.latest_version), self.arch))
+        self.artifacts = filter(r.match, self.all_artifacts)
+        yield log.addStdout(u"Built packages: {}\n".format(self.artifacts))
+
+        # Bail out if we don't have artifacts
+        if len(self.artifacts) == 0:
+            yield log.addStderr(u"No artifacts have been built!\n")
+            defer.returnValue(FAILURE)
+
+        # Copy the artifacts
+        for artifact in self.artifacts:
+            cmd = yield self._makeCommand("/usr/bin/cp -f packages/{}/{} ../repository".format(self.pkgname, artifact))
             yield self.runCommand(cmd)
             if cmd.didFail():
                 defer.returnValue(FAILURE)
 
-            # Add artifact to the list
-            r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(re.escape(self.latest_version), self.arch))
-            self.artifacts = cmd.stdout.strip().split(" ")
-            yield log.addStdout(u"Artifacts: {}\n".format(self.artifacts))
-            matching_artifacts = filter(r.match, cmd.stdout.strip().split(" "))
-            yield log.addStdout(u"Artifacts matching: {}\n".format(matching_artifacts))
-
-            # Update already built packages
-            r = re.compile(r'.*\-.*\-{}\.pkg\.tar\.xz'.format(self.arch))
-            already_built_packages = filter(r.match, cmd.stdout.strip().split(" "))
-            yield log.addStdout(u"Packages built: {}\n".format(already_built_packages))
-
-            # Bail out if we don't have artifacts
-            if len(self.artifacts) == 0:
-                yield log.addStderr(u"No artifacts have been built!\n")
+            cmd = yield self._makeCommand("repo-add ../repository/papyros.db.tar.gz " +
+                                          "../repository/{}".format(artifact))
+            yield self.runCommand(cmd)
+            if cmd.didFail():
                 defer.returnValue(FAILURE)
-
-            # Copy the artifacts
-            for artifact in self.artifacts:
-                cmd = yield self._makeCommand("/usr/bin/cp -f packages/{}/{} ../repository".format(self.pkgname, artifact))
-                yield self.runCommand(cmd)
-                if cmd.didFail():
-                    defer.returnValue(FAILURE)
-
-                cmd = yield self._makeCommand("repo-add ../repository/papyros.db.tar.gz " +
-                                              "../repository/{}".format(artifact))
-                yield self.runCommand(cmd)
-                if cmd.didFail():
-                    defer.returnValue(FAILURE)
 
         defer.returnValue(SUCCESS)
 
