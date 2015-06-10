@@ -62,8 +62,8 @@ else
         fi
     fi
     
-    if [[ $prev_ver != $pkgver ]]; then
-        echo Update $prev_ver -> $pkgver
+    if [ $prev_ver != $pkgver ]; then
+        echo Update $prev_ver -\> $pkgver
     fi
 fi
 

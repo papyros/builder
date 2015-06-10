@@ -37,4 +37,4 @@ rm -rf $install_dir
 mkdir -p $install_dir
 chmod a+rX $install_dir
 
-linux$arch pacstrap -dcC $conf_file $install_dir base base-devel $@
+linux$arch pacstrap -dC $conf_file $install_dir base base-devel $@
