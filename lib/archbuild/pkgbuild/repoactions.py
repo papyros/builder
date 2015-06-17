@@ -230,6 +230,8 @@ class Changelog(ShellMixin, BuildStep):
                 if cmd.didFail():
                     defer.returnValue(FAILURE)
                 changes = cmd.stdout
+            else:
+                changes = ' * New package add to the channel!!'
 
             if len(changes) > 0:
                 changelog += package + '\n' + changes + '\n'
