@@ -70,10 +70,11 @@ class BinaryPackageBuild(CcmAction):
         cmd = yield self._makeCommand("../../../helpers/pkgversion -l PKGBUILD", workdir=workdir)
         yield self.runCommand(cmd)
         if cmd.didFail():
+            yield log.addStderr(u"Unable to determine the version of {}".format(self.pkgname))
             defer.returnValue(FAILURE)
         self.latest_version = cmd.stdout.strip()
         if self.latest_version == "?":
-            yield log.addStderr(u"Unable to determine the {} version".format(self.pkgname))
+            yield log.addStderr(u"Unable to determine the version of {}".format(self.pkgname))
             defer.returnValue(FAILURE)
         yield log.addStdout(u"Latest Version: {}\n".format(self.latest_version))
 
