@@ -78,6 +78,9 @@ mount $loop "$sysroot"
 
 $DIR/ostree-install -n $os_name -o "$ostree_dir" -u "$url" -b $branch "$sysroot"
 
+tree -L 3 "$sysroot"
+less "$sysroot"/boot/syslinux/syslinux.cfg
+
 umount $sysroot
 
 losetup -d $loop
