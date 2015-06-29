@@ -79,6 +79,9 @@ mount $loop "$sysroot"
 
 $DIR/ostree-install -n $os_name -o "$ostree_dir" -u "$url" -b $branch "$sysroot"
 
+sed -i 's/KERNEL \//KERNEL \/boot\//g' "$sysroot"/boot/syslinux/syslinux.cfg
+sed -i 's/INITRD \//INITRD \/boot\//g' "$sysroot"/boot/syslinux/syslinux.cfg
+
 tree -L 3 "$sysroot"
 less "$sysroot"/boot/syslinux/syslinux.cfg
 
@@ -92,7 +95,7 @@ dd bs=440 count=1 conv=notrunc \
 rm -f "$image_path".xz
 xz "$image_path"
 
-cp "$image_path.xz" "$final_image_path.xz"
+mv "$image_path.xz" "$final_image_path.xz"
 
 chmod -R a+r "$final_image_path".xz
 chown -R buildbot:buildbot "$final_image_path".xz
