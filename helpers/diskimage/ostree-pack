@@ -28,7 +28,8 @@ os_name=$1
 url=$2
 ostree_dir=$3
 branch=$4
-image_path=$5
+image_path='papyros.img'
+final_image_path=$5
 size=$6
 arch=$7
 
@@ -91,5 +92,7 @@ dd bs=440 count=1 conv=notrunc \
 rm -f "$image_path".xz
 xz "$image_path"
 
-chmod -R a+r "$image_path".xz
-chown -R buildbot:buildbot "$image_path".xz
+cp "$image_path.xz" "$final_image_path.xz"
+
+chmod -R a+r "$final_image_path".xz
+chown -R buildbot:buildbot "$final_image_path".xz

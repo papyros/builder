@@ -56,7 +56,7 @@ class CreateDiskImage(ShellMixin, BuildStep):
             '/srv/http/ostree',
             'papyros/{branch}/{arch}/{channel}'
                     .format(branch=self.branch,arch=self.arch,channel=self.channel),
-            '/srv/http/images/{branch}/{arch}/{date}/papyros-{channel}.img'
+            '/srv/http/images/{branch}/papyros-{arch}-{channel}.img'
                     .format(branch=self.branch,arch=self.arch,channel=self.channel,
                             date=time.strftime("%Y%m%d")), 
             '10GB', self.arch], timeout=2400) # 40 minutes
