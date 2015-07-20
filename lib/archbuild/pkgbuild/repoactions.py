@@ -64,7 +64,7 @@ class RepositoryScan(ShellMixin, BuildStep):
                 self.packages = utils.union(self.packages, packages)
 
         # Make a list of packages that have been built already
-        cmd = yield self._makeCommand(["/usr/bin/find", "../repository", 
+        cmd = yield self._makeCommand(["/usr/bin/find", "../repository",
                 "-type", "f", "-name", "*.pkg.tar.xz", "-printf", "%f "])
         yield self.runCommand(cmd)
         if cmd.didFail():
@@ -82,7 +82,7 @@ class RepositoryScan(ShellMixin, BuildStep):
         if len(self.available_packages) == 0:
             yield log.addStdout("No available packages to build.\n")
             defer.returnValue(SKIPPED)
-            
+
         # Get the dependencies and provides for the packages
         pkg_info = []
         for pkgname in self.available_packages:
@@ -112,13 +112,13 @@ class RepositoryScan(ShellMixin, BuildStep):
         for pkg in pkg_info:
             deps = []
             for dep in pkg["depends"]:
-                providers = [npkg for npkg in pkg_info if dep in npkg["provides"] or npkg["name"] == dep]
+                providers = [npkg for npkg in pkg_info if npkg["name"] == dep]
                 if len(providers) > 0:
                     deps.append(providers[0]["name"])
             pkg["depends"] = deps
 
         names = [pkg["name"] for pkg in pkg_info]
-        
+
         for name in self.packages:
             if name in names:
                 self._markRequired(pkg_info, names, name)
@@ -133,7 +133,7 @@ class RepositoryScan(ShellMixin, BuildStep):
                     if dep != pkg["name"]:
                         graph.add_edge(dep, pkg["name"])
         sorted_names = nx.topological_sort(graph)
-        
+
         yield log.addStdout(u"Available packages to build:\n\t{}\n".format("\n\t".join(sorted_names)))
 
         required_packages = [name for name in sorted_names if pkg_info[names.index(name)]['required']]
@@ -223,8 +223,8 @@ class Changelog(ShellMixin, BuildStep):
 
             if prev_ver != '':
                 yield log.addStdout(u"Previous version for {} is {}\n".format(package, prev_ver))
-            
-                cmd = yield self._makeCommand(['../../../helpers/changelog', '-l', 
+
+                cmd = yield self._makeCommand(['../../../helpers/changelog', '-l',
                         'PKGBUILD', prev_ver], workdir=workdir)
                 yield self.runCommand(cmd)
                 if cmd.didFail():
@@ -274,4 +274,3 @@ class Changelog(ShellMixin, BuildStep):
             command = args
         return self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
             command=command, **kwargs)
-
