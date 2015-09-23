@@ -117,11 +117,8 @@ class RepositoryScan(ShellMixin, BuildStep):
                     deps.append(providers[0]["name"])
             pkg["depends"] = deps
 
-        names = [pkg["name"] for pkg in pkg_info]
-
         for name in self.packages:
-            if name in names:
-                self._markRequired(pkg_info, names, name)
+            self._markRequired(pkg_info, name)
 
         # Sort packages based on their dependencies
         graph = nx.DiGraph()
@@ -136,7 +133,8 @@ class RepositoryScan(ShellMixin, BuildStep):
 
         yield log.addStdout(u"Available packages to build:\n\t{}\n".format("\n\t".join(sorted_names)))
 
-        required_packages = [name for name in sorted_names if pkg_info[names.index(name)]['required']]
+        required_packages = [name for name in sorted_names
+                             if self._get_pkg(pkg_info, name)['required']]
 
         if len(required_packages) == 0:
             yield log.addStdout("No packages will be build.\n")
@@ -147,7 +145,7 @@ class RepositoryScan(ShellMixin, BuildStep):
         # Create build steps for the sorted packages list
         steps = []
         for name in required_packages:
-            info = pkg_info[names.index(name)]
+            info = self._get_pkg(pkg_info, name)
             steps.append(BinaryPackageBuild(name=name, arch=self.arch,
                             depends=info["depends"], provides=info["provides"]))
 
@@ -171,15 +169,25 @@ class RepositoryScan(ShellMixin, BuildStep):
         return self.makeRemoteShellCommand(collectStdout=True, collectStderr=True,
             command=command, **kwargs)
 
-    def _markRequired(self, pkg_info, names, name):
-        pkg = pkg_info[names.index(name)]
+    def _markRequired(self, pkg_info, pkg):
+        if isinstance(pkg, basestring):
+            pkg = self._get_pkg(pkg_info, pkg)
 
-        if pkg['required']:
+        if pkg is None:
+            return
+        elif pkg['required']:
             return
         else:
             pkg['required'] = True
             for dep in pkg['depends']:
-                self._markRequired(pkg_info, names, dep)
+                self._markRequired(pkg_info, dep)
+
+    def _get_pkg(self, pkg_info, name):
+        for pkg in pkg_info:
+            possible_names = [pkg['name']] + pkg['provides']
+
+            if name in possible_names:
+                return pkg
 
 class Changelog(ShellMixin, BuildStep):
     """
