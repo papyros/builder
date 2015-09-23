@@ -83,12 +83,12 @@ class BinaryPackageBuild(CcmAction):
         yield log.addStdout(u"Expected package file name: {}\n".format(self.pkgfilename))
 
         # Already built packages
-        r = re.compile(r'{}.*\-.*\-{}\.pkg\.tar\.xz'.format(self.pkgname, self.arch))
+        r = re.compile(r'{}.*\-.*\-({}|any)\.pkg\.tar\.xz'.format(self.pkgname, self.arch))
         already_built_packages = filter(r.match, existing_packages)
         yield log.addStdout(u"Existing packages: {}\n".format(already_built_packages))
 
         # Did we have this package already built?
-        r = re.compile(r'{}.*\-{}\-{}\.pkg\.tar\.xz'.format(self.pkgname, re.escape(self.latest_version), self.arch))
+        r = re.compile(r'{}.*\-{}\-({}|any)\.pkg\.tar\.xz'.format(self.pkgname, re.escape(self.latest_version), self.arch))
         already_built_same_version = filter(r.match, existing_packages)
 
         already_built = len(already_built_same_version) > 0
@@ -126,7 +126,7 @@ class BinaryPackageBuild(CcmAction):
         yield log.addStdout(u"All packages: {}\n".format(self.all_artifacts))
         
         # Add artifact to the list
-        r = re.compile(r'.*\-{}\-{}\.pkg\.tar\.xz'.format(re.escape(self.latest_version), self.arch))
+        r = re.compile(r'.*\-{}\-({}|any)\.pkg\.tar\.xz'.format(re.escape(self.latest_version), self.arch))
         self.artifacts = filter(r.match, self.all_artifacts)
         yield log.addStdout(u"Built packages: {}\n".format(self.artifacts))
 
