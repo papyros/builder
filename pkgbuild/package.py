@@ -1,5 +1,5 @@
 from .helpers import pkgversion, pkgdepends, pkgprovides, pkgsources
-from .helpers import find_files, repoadd, ccm
+from .helpers import find_files, repoadd, ccm, ccm_repoadd
 import tarfile
 import os.path
 import re
@@ -28,6 +28,8 @@ class Package:
         print(' -> ' + self.name)
         for name, source in self.sources.items():
             if source.startswith('git'):
+                if source.startswith('git+'):
+                    source = source[4:]
                 downloader.git_clone(source, os.path.join(self.workdir, name), bare=True)
             elif source.startswith('http') or source.startswith('https'):
                 print('HTTP!')
@@ -44,7 +46,7 @@ class Package:
         self.needs_build = self.latest_version != self.built_version
 
     def build(self):
-        print(' -> ' + self.name)
+        print(' -> {} ({} -> {})'.format(self.name, self.built_version, self.latest_version))
         if self.needs_build:
             ccm('s', arch=self.repo.arch, workdir=self.workdir)
 
@@ -56,6 +58,7 @@ class Package:
         # Copy the artifacts
         for artifact in self.artifacts:
             repoadd(self.repo.database, os.path.join(self.workdir, artifact))
+            ccm_repoadd(os.path.join(self.workdir, artifact), arch=self.repo.arch)
 
     def built_packages(self, latest_only=False):
         regex = self.latest_pkg_regex if latest_only else self.pkg_regex
@@ -65,7 +68,7 @@ class Package:
 
     @property
     def pkg_regex(self):
-        return re.compile(r'{}.*?\-(\d.*)\-({}|any)\.pkg\.tar\.xz'.format(self.name, self.repo.arch))
+        return re.compile(r'{}.*?\-(r?\d.*)\-({}|any)\.pkg\.tar\.xz'.format(self.name, self.repo.arch))
 
     @property
     def latest_pkg_regex(self):

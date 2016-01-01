@@ -2,7 +2,7 @@ import os.path
 import networkx as nx
 
 from .package import Package
-from utils import load_yaml
+from utils import load_yaml, flatten
 
 class Repository:
     def __init__(self, name, arch, packages, workdir):
@@ -68,7 +68,7 @@ class Repository:
             package.build()
 
     def from_channel_config(config, arch, workdir):
-        if isinstance(config, basestr):
+        if isinstance(config, str):
             config = load_yaml(config)
         packages = flatten([config['channels'][name]['packages'] for name in config['channels']])
         return Repository(config['name'].lower(), arch, packages, workdir)

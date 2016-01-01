@@ -15,12 +15,13 @@ def git_clone(url, path, bare=False):
     if os.path.exists(path):
         repo = Repo(path)
         repo.remotes.origin.fetch(progress=progress)
-        return repo
     else:
         kwargs = {}
         if branch is not None:
             kwargs['branch'] = branch
-        return Repo.clone_from(url, path, progress=progress, bare=True, **kwargs)
+        repo = Repo.clone_from(url, path, progress=progress, mirror=True, **kwargs)
+    progress.finish()
+    return repo
 
 
 class ProgressBar(RemoteProgress):
@@ -31,7 +32,13 @@ class ProgressBar(RemoteProgress):
 
     def update(self, op_code, cur_count, max_count=None, message=''):
         if self.bar is None or self.bar.op_code != op_code:
+            if self.bar is not None:
+                self.bar.finish()
             self.bar = progressbar.ProgressBar(max_value=(max_count or 100.0))
             self.bar.op_code = op_code
         if cur_count > 0 and cur_count < self.bar.max_value:
             self.bar.update(cur_count)
+
+    def finish(self):
+        if self.bar is not None:
+            self.bar.finish()

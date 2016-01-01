@@ -44,4 +44,8 @@ def repoadd(database, package):
 
 def ccm(action, arch, workdir):
     bits = "32" if arch == "i686" else "64"
-    return utils.run(['sudo', 'ccm' + bits, action], workdir=workdir)
+    return utils.run(['sudo', 'ccm' + bits, action], workdir=workdir, capture_stdout=False)
+
+def ccm_repoadd(package, arch):
+    bits = "32" if arch == "i686" else "64"
+    repoadd('/scratch/chroot{}/root/repo/chroot_local.db'.format(bits), package)

@@ -6,11 +6,13 @@ from core import base_dir
 import subprocess
 
 
-def run(cmd, workdir=None):
-    completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
-                                stdout=subprocess.PIPE)
-    return completion.stdout.strip()
-
+def run(cmd, workdir=None, capture_stdout=True):
+    if capture_stdout:
+        completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
+                                    stdout=subprocess.PIPE)
+        return completion.stdout.strip()
+    else:
+        return subprocess.run(cmd, cwd=workdir, check=True)
 
 def helper(type, name, args, workdir):
     return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir)
