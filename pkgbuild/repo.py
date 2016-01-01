@@ -58,7 +58,9 @@ class Repository:
             package.download()
 
     def refresh(self):
-        pass
+        print('Refreshing package statuses...')
+        for package in self.packages:
+            package.refresh()
 
     def build(self):
         print('Building packages')

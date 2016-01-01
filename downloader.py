@@ -4,18 +4,17 @@ import os.path
 import progressbar
 
 def git_clone(url, path, bare=False):
-    url, other = url.split('#', 1)
+    branch = None
+    if '#' in url:
+        url, other = url.split('#', 1)
 
-    reftype, branch = other.split('=')
+        if '=' in other:
+            reftype, branch = other.split('=')
 
     progress = ProgressBar()
     if os.path.exists(path):
         repo = Repo(path)
-        repo.pull(progress=progress)
-        # TODO: Does this work with tags?
-        repo.head = repo.heads[branch]
-        # reset the index and working tree to match the pointed-to commit
-        repo.head.reset(index=True, working_tree=True)
+        repo.remotes.origin.fetch(progress=progress)
         return repo
     else:
         kwargs = {}
