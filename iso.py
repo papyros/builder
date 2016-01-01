@@ -55,7 +55,7 @@ class ArchISO(object):
         # Set up the iso build dir
         shutil.copytree('/usr/share/archiso/configs/releng', self.build_dir)
 
-        # TODO: Add any additional repos
+        # Add any additional repos
         replace_in_file(self.path('pacman.conf'), r'\#\[testing\]',
                 '\n\n'.join(self.custom_repos) + '\n\n#[testing]')
 

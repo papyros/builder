@@ -1,5 +1,17 @@
 import re
 import yaml
+import os.path
+from core import base_dir
+
+import subprocess
+
+def run(cmd, workdir=None):
+    completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
+                                stdout=subprocess.PIPE)
+    return completion.stdout
+
+def helper(type, name, args, workdir):
+    return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir)
 
 def load_yaml(fileName):
     from yaml import load
