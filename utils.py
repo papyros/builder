@@ -5,13 +5,16 @@ from core import base_dir
 
 import subprocess
 
+
 def run(cmd, workdir=None):
     completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
                                 stdout=subprocess.PIPE)
-    return completion.stdout
+    return completion.stdout.strip()
+
 
 def helper(type, name, args, workdir):
     return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir)
+
 
 def load_yaml(fileName):
     from yaml import load
@@ -21,6 +24,10 @@ def load_yaml(fileName):
         from yaml import Loader
     stream = open(fileName, "r")
     return load(stream, Loader=Loader)
+
+
+def flatten(outer_list):
+    return [item for inner_list in outer_list for item in inner_list]
 
 
 def append_to_file(filename, text):

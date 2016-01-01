@@ -1,7 +1,9 @@
-from .helpers import pkgversion, pkgdepends, pkgprovides, find_files, repoadd, ccm
+from .helpers import pkgversion, pkgdepends, pkgprovides, pkgsources
+from .helpers import find_files, repoadd, ccm
 import tarfile
 import os.path
 import re
+import downloader
 
 class Package:
     required = False
@@ -11,6 +13,27 @@ class Package:
         self.name = name
         self.workdir = os.path.join(self.repo.workdir, 'packages', name)
 
+    def load(self):
+        self.dependencies = pkgdepends(self.workdir)
+        self.provides = pkgprovides(self.workdir)
+        self.sources = {}
+        for source in pkgsources(self.workdir):
+            split = source.split('::', 1)
+            if len(split) == 2:
+                self.sources[split[0]] = split[1]
+            else:
+                self.sources[split[0]] = split[0]
+
+    def download(self):
+        print(' -> ' + self.name)
+        for name, source in self.sources.items():
+            if source.startswith('git'):
+                downloader.git_clone(source, os.path.join(self.workdir, name), bare=True)
+            elif source.startswith('http') or source.startswith('https'):
+                print('HTTP!')
+            elif '://' in source:
+                raise Exception('Unkown protocol for source: ' + source)
+
     def refresh(self):
         print(' -> ' + self.name)
         built_packages = self.built_packages(latest_only=False)
@@ -18,8 +41,6 @@ class Package:
                           for filename in built_packages]
         self.built_version = max(built_versions) if len(built_versions) > 0 else None
         self.latest_version = pkgversion(self.name, workdir=self.workdir, latest=True)
-        self.dependencies = pkgdepends(self.workdir)
-        self.provides = pkgprovides(self.workdir)
         self.needs_build = self.latest_version != self.built_version
 
     def build(self):

@@ -20,10 +20,13 @@ def pkgversion(pkgname, workdir, latest=False):
     return latest_version
 
 def pkgdepends(workdir):
-    return helper('pkgdepends', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split(' ')
+    return helper('pkgdepends', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split()
 
 def pkgprovides(workdir):
-    return helper('pkgprovides', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split(' ')
+    return helper('pkgprovides', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split()
+
+def pkgsources(workdir):
+    return helper('pkgsources', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split()
 
 def find_files(pattern, workdir):
     os.chdir(workdir)

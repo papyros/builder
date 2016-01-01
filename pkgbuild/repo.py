@@ -13,17 +13,18 @@ class Repository:
         self.database = os.path.join(self.repo_dir, name + '.db.tar.gz')
         self.package_names = packages
 
-    def refresh(self):
+    def load(self):
         all_package_names = self.find_packages()
         self.all_packages = [Package(self, name) for name in all_package_names]
 
-        print('Refreshing package statuses...')
+        print('Loading packages...')
         for package in self.all_packages:
-            package.refresh()
+            package.load()
 
         # Update the list of dependencies removing dependencies provided by the system
         for package in self.all_packages:
-            package.dependencies = [dependency for dependency in package.dependencies
+            package.dependencies = [self.get_package(dependency).name
+                                    for dependency in package.dependencies
                                     if self.get_package(dependency) is not None]
 
         # Recursively mark requested packages and all their dependencies as required
@@ -32,7 +33,7 @@ class Repository:
 
         # Sort packages based on their dependencies
         graph = nx.DiGraph()
-        for pkg in pkg_info:
+        for pkg in self.all_packages:
             if len(pkg.dependencies) == 0:
                 graph.add_node(pkg.name)
             else:
@@ -44,8 +45,20 @@ class Repository:
         self.packages = [self.get_package(name) for name in sorted_names
                          if self.get_package(name).required]
 
+        print('Packages to build:')
+        for package in self.packages:
+            print(' -> ' + package.name)
+
         if len(self.packages) == 0:
             raise Exception('No packages to build!')
+
+    def download(self):
+        print('Downloading package sources...')
+        for package in self.packages:
+            package.download()
+
+    def refresh(self):
+        pass
 
     def build(self):
         print('Building packages')
@@ -79,7 +92,7 @@ class Repository:
             print('{} {} {}'.format(package.name, package.built_version, package.latest_version))
 
     def _markRequired(self, pkg):
-        if isinstance(pkg, basestring):
+        if isinstance(pkg, str):
             pkg = self.get_package(pkg)
 
         if pkg is None:
@@ -88,12 +101,12 @@ class Repository:
             return
         else:
             pkg.required = True
-            for dep in pkg['depends']:
+            for dep in pkg.dependencies:
                 self._markRequired(dep)
 
     def get_package(self, name):
-        for pkg in self.all_packages.values():
-            possible_names = [pkg['name']] + pkg['provides']
+        for pkg in self.all_packages:
+            possible_names = [pkg.name] + pkg.provides
 
             if name in possible_names:
                 return pkg
