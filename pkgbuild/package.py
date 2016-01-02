@@ -70,14 +70,13 @@ class Package:
 
     @property
     def changes(self):
-
         if not self.prev_ver:
             return ' * New package added to the channel!'
 
         changes = changelog(self.prev_ver, workdir=self.workdir)
 
         if len(changes) == 0:
-            changes = ' * No changes'
+            return None
 
         return changes
 

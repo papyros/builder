@@ -2,7 +2,7 @@ import os.path
 import networkx as nx
 
 from .package import Package
-from utils import load_yaml, flatten
+from utils import load_yaml, flatten, save_yaml
 from git import Actor, Repo
 from datetime import datetime
 
@@ -90,20 +90,24 @@ class Repository:
 
     def publish(self):
         for package in self.packages:
-            self.buildinfo.get('packages')[self.name] = package.gitrev
-        utils.save_yaml(os.path.join(self.repo_dir, 'buildinfo.yml', self.buildinfo))
-        repo = Repo(self.repo_dir)
+            self.buildinfo.get('packages')[package.name] = package.gitrev
+        save_yaml(os.path.join(self.workdir, 'buildinfo.yml'), self.buildinfo)
+        repo = Repo(self.workdir)
         repo.index.add(['buildinfo.yml'] +
-                       ['packages/{}/PKGBUILD'.format(pkg.name for pkg in self.packages)])
-        repo.index.commit('Build {} at {}\n\n{}'.format(self.build_number, datetime.now(),
-                                                        self.changelog),
+                       ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in self.packages])
+        repo.index.commit('Build {} at {:%c}\n\n{}'.format(self.build_number, datetime.now(),
+                                                           self.changelog),
                           author=Actor("Builder", "builder@papyros.io"))
         repo.remotes.origin.push()
 
     @property
     def changelog(self):
-        changes = ['{}:\n{}'.format(pkg.name, pkg.changes) for pkg in self.packages]
-        return '\n\n'.join(changes)
+        changes = ['{}:\n{}'.format(pkg.name, pkg.changes) for pkg in self.packages
+                   if pkg.changes is not None]
+        if len(changes) > 0:
+            return '\n\n'.join(changes)
+        else:
+            return 'No changes'
 
     @property
     def needs_build(self):
