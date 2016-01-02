@@ -30,6 +30,11 @@ def load_yaml(fileName):
     return load(stream, Loader=Loader)
 
 
+def save_yaml(fileName, data):
+	with open(fileName, 'w') as file:
+		file.write(yaml.dump(data, default_flow_style=False))
+
+
 def flatten(outer_list):
     return [item for inner_list in outer_list for item in inner_list]
 

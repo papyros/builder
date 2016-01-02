@@ -29,10 +29,10 @@ def pkgsources(workdir):
     return helper('pkgsources', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir).split()
 
 def gitrev(workdir):
-    return helper('gitrev', [os.path.join(workdir, 'PKGBUILD')], workdir=workdir)
+    return helper('gitrev', ['-l', os.path.join(workdir, 'PKGBUILD')], workdir=workdir)
 
 def changelog(prev_ver, workdir):
-    return helper('changelog', [os.path.join(workdir, 'PKGBUILD'), prev_ver],
+    return helper('changelog', ['-l', os.path.join(workdir, 'PKGBUILD'), prev_ver],
             workdir=workdir)
 
 def find_files(pattern, workdir):

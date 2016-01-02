@@ -3,8 +3,12 @@ import networkx as nx
 
 from .package import Package
 from utils import load_yaml, flatten
+from git import Actor, Repo
+from datetime import datetime
 
 class Repository:
+    build_number = 1  # TODO: Load the build number from the buildinfo
+
     def __init__(self, name, arch, packages, workdir):
         self.name = name
         self.arch = arch
@@ -83,6 +87,18 @@ class Repository:
                 os.path.exists(os.path.join(pkg_dir, file, 'PKGBUILD'))):
                 packages.append(file)
         return packages
+
+    def publish(self):
+        for package in self.packages:
+            self.buildinfo.get('packages')[self.name] = package.gitrev
+        utils.save_yaml(os.path.join(self.repo_dir, 'buildinfo.yml', self.buildinfo))
+        repo = Repo(self.repo_dir)
+        repo.index.add(['buildinfo.yml'] +
+                       ['packages/{}/PKGBUILD'.format(pkg.name for pkg in self.packages)])
+        repo.index.commit('Build {} at {}\n\n{}'.format(self.build_number, datetime.now(),
+                                                        self.changelog),
+                          author=Actor("Builder", "builder@papyros.io"))
+        repo.remotes.origin.push()
 
     @property
     def changelog(self):

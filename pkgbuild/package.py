@@ -43,6 +43,8 @@ class Package:
                           for filename in built_packages]
         self.built_version = max(built_versions) if len(built_versions) > 0 else None
         self.latest_version = pkgversion(self.name, workdir=self.workdir, latest=True)
+        self.gitrev = gitrev(workdir=self.workdir)
+        self.prev_ver = self.repo.buildinfo.get('packages').get(self.name, None)
         self.needs_build = self.latest_version != self.built_version
 
     def build(self):
@@ -68,13 +70,11 @@ class Package:
 
     @property
     def changes(self):
-        prev_ver = self.repo.buildinfo.get('packages').get(self.name, None)
-        self.repo.buildinfo.get('packages')[self.name] = gitrev(workdir=self.workdir)
 
-        if not prev_ver:
+        if not self.prev_ver:
             return ' * New package added to the channel!'
 
-        changes = changelog(prev_ver, workdir=self.workdir)
+        changes = changelog(self.prev_ver, workdir=self.workdir)
 
         if len(changes) == 0:
             changes = ' * No changes'
