@@ -5,9 +5,9 @@ from .package import Package
 from utils import load_yaml, flatten, save_yaml
 from git import Actor, Repo
 from datetime import datetime
+from shutil import copytree, rmtree
 
 class Repository:
-    build_number = 1  # TODO: Load the build number from the buildinfo
 
     def __init__(self, name, arch, packages, workdir):
         self.name = name
@@ -19,6 +19,7 @@ class Repository:
 
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
+        self.build_number = self.build_number.get('build_number', 0) + 1
 
         all_package_names = self.find_packages()
         self.all_packages = [Package(self, name) for name in all_package_names]
@@ -70,9 +71,11 @@ class Repository:
 
     def build(self):
         print('Building packages')
+        rmtree(self.repo_dir)
         for package in self.packages:
             package.build()
 
+    @staticmethod
     def from_channel_config(config, arch, workdir):
         if isinstance(config, str):
             config = load_yaml(config)
@@ -88,10 +91,14 @@ class Repository:
                 packages.append(file)
         return packages
 
-    def publish(self):
+    def publish(self, export_dir):
+        export_dir = export_dir.format(name=self.name, arch=self.arch)
+
         for package in self.packages:
             self.buildinfo.get('packages')[package.name] = package.gitrev
+        self.buildinfo['number'] = self.build_number
         save_yaml(os.path.join(self.workdir, 'buildinfo.yml'), self.buildinfo)
+
         repo = Repo(self.workdir)
         repo.index.add(['buildinfo.yml'] +
                        ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in self.packages])
@@ -99,6 +106,9 @@ class Repository:
                                                            self.changelog),
                           author=Actor("Builder", "builder@papyros.io"))
         repo.remotes.origin.push()
+
+        rmtree(export_dir)
+        copytree(self.repo_dir, export_dir)
 
     @property
     def changelog(self):
