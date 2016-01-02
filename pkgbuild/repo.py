@@ -97,7 +97,7 @@ class Repository:
 
         for package in self.packages:
             self.buildinfo.get('packages')[package.name] = package.gitrev
-        self.buildinfo['number'] = self.build_number
+        self.buildinfo['build_number'] = self.build_number
         save_yaml(os.path.join(self.workdir, 'buildinfo.yml'), self.buildinfo)
 
         repo = Repo(self.workdir)
