@@ -19,7 +19,7 @@ class Repository:
 
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
-        self.build_number = self.build_number.get('build_number', 0) + 1
+        self.build_number = self.buildinfo.get('build_number', 0) + 1
 
         all_package_names = self.find_packages()
         self.all_packages = [Package(self, name) for name in all_package_names]
