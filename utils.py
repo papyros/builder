@@ -6,7 +6,9 @@ from core import base_dir
 import subprocess
 
 
-def run(cmd, workdir=None, capture_stdout=True):
+def run(cmd, workdir=None, capture_stdout=True, sudo=False):
+    if sudo:
+        cmd = ['sudo'] + cmd
     if capture_stdout:
         completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
                                     stdout=subprocess.PIPE)
@@ -14,8 +16,8 @@ def run(cmd, workdir=None, capture_stdout=True):
     else:
         return subprocess.run(cmd, cwd=workdir, check=True)
 
-def helper(type, name, args, workdir):
-    return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir)
+def helper(type, name, args, workdir, sudo=False):
+    return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir, sudo=sudo)
 
 
 def load_yaml(fileName):

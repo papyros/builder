@@ -1,4 +1,4 @@
-from .helpers import pkgversion, pkgdepends, pkgprovides, pkgsources
+from .helpers import pkgversion, pkgdepends, pkgprovides, pkgsources, gitrev, changelog
 from .helpers import find_files, repoadd, ccm, ccm_repoadd
 import tarfile
 import os.path
@@ -65,6 +65,21 @@ class Package:
         packages = find_files('*.pkg.tar.xz'.format(self.name, self.repo.arch),
                               workdir=self.workdir)
         return list(filter(regex.match, packages))
+
+    @property
+    def changes(self):
+        prev_ver = self.repo.buildinfo.get('packages').get(self.name, None)
+        self.repo.buildinfo.get('packages')[self.name] = gitrev(workdir=self.workdir)
+
+        if not prev_ver:
+            return ' * New package added to the channel!'
+
+        changes = changelog(prev_ver, workdir=self.workdir)
+
+        if len(changes) == 0:
+            changes = ' * No changes'
+
+        return changes
 
     @property
     def pkg_regex(self):

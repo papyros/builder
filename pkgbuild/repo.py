@@ -14,6 +14,8 @@ class Repository:
         self.package_names = packages
 
     def load(self):
+        self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
+
         all_package_names = self.find_packages()
         self.all_packages = [Package(self, name) for name in all_package_names]
 
@@ -81,6 +83,11 @@ class Repository:
                 os.path.exists(os.path.join(pkg_dir, file, 'PKGBUILD'))):
                 packages.append(file)
         return packages
+
+    @property
+    def changelog(self):
+        changes = ['{}:\n{}'.format(pkg.name, pkg.changes) for pkg in self.packages]
+        return '\n\n'.join(changes)
 
     @property
     def needs_build(self):
