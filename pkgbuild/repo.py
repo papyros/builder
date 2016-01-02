@@ -71,7 +71,8 @@ class Repository:
 
     def build(self):
         print('Building packages')
-        rmtree(self.repo_dir)
+        if os.path.exists(self.repo_dir):
+            rmtree(self.repo_dir)
         for package in self.packages:
             package.build()
 
