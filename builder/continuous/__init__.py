@@ -17,7 +17,14 @@ class ContinuousIntegration(Container):
         repo.build()
 
     def process_pull_request(self, pull_request):
-        pass
+        print('Processing pull request')
+        repo_name = pull_request['base']['repo']['full_name']
+        repo = next((repo for repo in self.repos if repo.name == repo_name), None)
+        if not repo:
+            raise Exception("Repository not registered: " + repo_name)
+        patch_url = pull_request['patch_url']
+        branch = pull_request['base']['ref']
+        repo.build(branch=branch, patch_url=patch_url)
 
     @property
     def objects(self):
@@ -31,9 +38,9 @@ class Repository(Object):
         self.workdir = workdir
         self.source = GitSource(workdir, name)
 
-    def build(self):
+    def build(self, branch=None, patch_url=None):
         print('Starting CI build of ' + self.name)
-        return build_continuous.delay(self)
+        return build_continuous.delay(self, branch=branch, patch_url=patch_url)
 
     @property
     def config(self):

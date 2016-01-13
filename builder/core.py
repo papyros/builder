@@ -1,8 +1,9 @@
+import os
 import os.path
+
 from celery import Celery, Task
 from celery.utils.log import get_task_logger
 from github3 import login
-import os
 
 
 class Container(object):

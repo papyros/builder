@@ -1,5 +1,6 @@
 continuous:
     - papyros/libpapyros
+    - iBeliever/Spoon-Knife
 repositories:
     - name: testing/{arch}
       git: papyros/repository#branch=testing
