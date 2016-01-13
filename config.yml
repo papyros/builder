@@ -1,0 +1,12 @@
+continuous:
+    - papyros/libpapyros
+repositories:
+    - name: testing/{arch}
+      git: papyros/repository#branch=testing
+ostree:
+    - name: testing/{arch}
+      git: papyros/repository
+isos:
+    - name: testing/{arch}
+      git: papyros/repository#branch=testing
+      config: iso_config.yml

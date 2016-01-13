@@ -1,9 +1,20 @@
-from pkgbuild.repo import Repository
+#! /usr/bin/env python3
 
-repo = Repository.from_channel_config('/home/mspencer/Developer/papyros/repository/channels.yml',
-        'x86_64', workdir='/home/mspencer/Developer/papyros/repository')
-repo.load()
-repo.download()
-repo.refresh()
-repo.build()
-repo.publish('/srv/http/repos/papyros/{arch}')
+from continuous import ContinuousIntegration
+from utils import load_yaml
+from core import base_dir
+import sys
+import os.path
+
+
+if __name__ == '__main__':
+    config = load_yaml(os.path.join(base_dir, 'config.yml'))
+
+    cmd = sys.argv[1]
+    args = sys.argv[2:]
+
+    if cmd == 'ci':
+        container = ContinuousIntegration(config.get('continuous', []))
+        container.execute(*args)
+    else:
+        print('Command not found: ' + cmd)
