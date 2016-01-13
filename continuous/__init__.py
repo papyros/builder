@@ -72,7 +72,9 @@ def build_continuous(repo):
 
     logger.info('Building repo: ' + repo.name)
     logger.info('Fetching sources...')
-    repo.source.pull()
+    if not repo.source.pull():
+        logger.info("No updates, not building")
+        return
 
     logger.info('Creating chroot...')
     chroot.create()

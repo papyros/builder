@@ -30,8 +30,8 @@ class GitSource(Source):
     def pull(self):
         if self.exists:
             info = self.repo.remotes.origin.pull()[0]
-
-            updated = info.flags & info.FORCED_UPDATE|info.FAST_FORWARD|info.NEW_HEAD
+            
+            updated = info.flags & (info.FORCED_UPDATE|info.FAST_FORWARD|info.NEW_HEAD)
             return updated
         else:
             self.repo = Repo.clone_from(self.url, self.workdir)
