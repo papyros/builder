@@ -1,7 +1,7 @@
 import re
 import yaml
 import os.path
-from core import base_dir
+from builder.core import base_dir
 
 import subprocess
 
@@ -9,6 +9,7 @@ import subprocess
 def run(cmd, workdir=None, capture_stdout=True, sudo=False):
     if sudo:
         cmd = ['sudo'] + cmd
+    print(' '.join(cmd))
     if capture_stdout:
         completion = subprocess.run(cmd, cwd=workdir, check=True, universal_newlines=True,
                                     stdout=subprocess.PIPE)

@@ -1,10 +1,7 @@
-from subprocess import call
-from shutil import copy
+import builder.utils
 import os
 import os.path
-import glob
 
-import utils
 
 def mkarchroot(workdir, packages=None):
     if not packages:

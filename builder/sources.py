@@ -27,10 +27,10 @@ class GitSource(Source):
             self.repo = Repo(workdir)
 
     # TODO: Implement progress
-    def pull(self):
+    def pull(self, sha=None):
         if self.exists:
             info = self.repo.remotes.origin.pull()[0]
-            
+
             updated = info.flags & (info.FORCED_UPDATE|info.FAST_FORWARD|info.NEW_HEAD)
             return updated
         else:

@@ -3,7 +3,7 @@ import os.path, os
 import sys
 import shutil
 import subprocess
-from utils import append_to_file, replace_in_file, load_yaml
+from builder.utils import append_to_file, replace_in_file, load_yaml
 
 class ArchISO(object):
     packages_i686 = []

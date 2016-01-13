@@ -17,6 +17,9 @@ class Repository:
         self.database = os.path.join(self.repo_dir, name + '.db.tar.gz')
         self.package_names = packages
 
+    def triggers(self):
+        return
+
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
         self.build_number = self.buildinfo.get('build_number', 0) + 1
@@ -69,13 +72,6 @@ class Repository:
         for package in self.packages:
             package.refresh()
 
-    def build(self):
-        print('Building packages')
-        if os.path.exists(self.repo_dir):
-            rmtree(self.repo_dir)
-        for package in self.packages:
-            package.build()
-
     @staticmethod
     def from_channel_config(config, arch, workdir):
         if isinstance(config, str):
@@ -92,44 +88,12 @@ class Repository:
                 packages.append(file)
         return packages
 
-    def publish(self, export_dir):
-        export_dir = export_dir.format(name=self.name, arch=self.arch)
-
-        for package in self.packages:
-            self.buildinfo.get('packages')[package.name] = package.gitrev
-        self.buildinfo['build_number'] = self.build_number
-        save_yaml(os.path.join(self.workdir, 'buildinfo.yml'), self.buildinfo)
-
-        repo = Repo(self.workdir)
-        repo.index.add(['buildinfo.yml'] +
-                       ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in self.packages])
-        repo.index.commit('Build {} at {:%c}\n\n{}'.format(self.build_number, datetime.now(),
-                                                           self.changelog),
-                          author=Actor("Builder", "builder@papyros.io"))
-        repo.remotes.origin.push()
-
-        rmtree(export_dir)
-        copytree(self.repo_dir, export_dir)
-
-    @property
-    def changelog(self):
-        changes = ['{}:\n{}'.format(pkg.name, pkg.changes) for pkg in self.packages
-                   if pkg.changes is not None]
-        if len(changes) > 0:
-            return '\n\n'.join(changes)
-        else:
-            return 'No changes'
-
     @property
     def needs_build(self):
         for package in self.packages:
             if package.needs_build:
                 return True
         return False
-
-    def print_status(self):
-        for package in self.packages:
-            print('{} {} {}'.format(package.name, package.built_version, package.latest_version))
 
     def _markRequired(self, pkg):
         if isinstance(pkg, str):
@@ -150,3 +114,47 @@ class Repository:
 
             if name in possible_names:
                 return pkg
+
+class RepositoryBuildJob:
+    def __init__(self, repo, packages):
+        self.repo = repo
+        self.packages
+
+    def run(self):
+        self.build()
+        self.publish('/srv/http/repos/{name}/{arch}'.format(name=self.name, arch=self.arch))
+
+    def build(self):
+        print('Building packages')
+        if os.path.exists(self.repo.repo_dir):
+            rmtree(self.repo.repo_dir)
+        for package in self.repo.packages:
+            self.status = 'Building {}'.format(package.name)
+            package.build()
+
+    def publish(self, export_dir):
+        self.status = 'Publishing changes'
+        for package in self.repo.packages:
+            self.repo.buildinfo.get('packages')[package.name] = package.gitrev
+        self.repo.buildinfo['build_number'] = self.build_number
+        save_yaml(os.path.join(self.repo.workdir, 'buildinfo.yml'), self.repo.buildinfo)
+
+        repo = Repo(self.repo.workdir)
+        repo.index.add(['buildinfo.yml'] +
+                       ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in self.packages])
+        repo.index.commit('Build {} at {:%c}\n\n{}'.format(self.build_number, datetime.now(),
+                                                           self.changelog),
+                          author=Actor("Builder", "builder@papyros.io"))
+        repo.remotes.origin.push()
+
+        rmtree(export_dir)
+        copytree(self.repo.repo_dir, export_dir)
+
+    @property
+    def changelog(self):
+        changes = ['{}:\n{}'.format(pkg.name, pkg.changes) for pkg in self.packages
+                   if pkg.changes is not None]
+        if len(changes) > 0:
+            return '\n\n'.join(changes)
+        else:
+            return 'No changes'

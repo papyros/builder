@@ -5,7 +5,7 @@ import os.path
 import re
 import downloader
 
-class Package:
+class Package(Object):
     required = False
 
     def __init__(self, repo, name):
@@ -26,6 +26,7 @@ class Package:
 
     def download(self):
         print(' -> ' + self.name)
+        self.status = 'Downloading sources'
         for name, source in self.sources.items():
             if source.startswith('git'):
                 if source.startswith('git+'):
@@ -38,6 +39,7 @@ class Package:
 
     def refresh(self):
         print(' -> ' + self.name)
+        self.status = 'Checking status'
         built_packages = self.built_packages(latest_only=False)
         built_versions = [self.pkg_regex.match(filename).group(1)
                           for filename in built_packages]
@@ -46,9 +48,16 @@ class Package:
         self.gitrev = gitrev(workdir=self.workdir)
         self.prev_ver = self.repo.buildinfo.get('packages').get(self.name, None)
         self.needs_build = self.latest_version != self.built_version
+        if self.built_version is None:
+            self.status = 'New package'
+        elif self.needs_build:
+            self.status = 'Outdated'
+        else:
+            self.status = 'Up to date'
 
     def build(self):
         print(' -> {} ({} -> {})'.format(self.name, self.built_version, self.latest_version))
+        self.status = 'Building'
         if self.needs_build:
             ccm('s', arch=self.repo.arch, workdir=self.workdir)
 
@@ -61,6 +70,7 @@ class Package:
         for artifact in self.artifacts:
             repoadd(self.repo.database, os.path.join(self.workdir, artifact))
             ccm_repoadd(os.path.join(self.workdir, artifact), arch=self.repo.arch)
+        self.status = 'Up to date'
 
     def built_packages(self, latest_only=False):
         regex = self.latest_pkg_regex if latest_only else self.pkg_regex
