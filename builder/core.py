@@ -8,14 +8,10 @@ from github3 import login
 
 
 class Container(object):
+    objects = []
 
-    @property
-    def triggers(self):
-        return []
-
-    @property
-    def objects(self):
-        return []
+    def get(self, name):
+        return next((obj for obj in self.objects if obj.name == name), None)
 
 
 class JobTask(Task):
@@ -23,16 +19,12 @@ class JobTask(Task):
 
 
 class Object(object):
+    name = None
     status = 'Not yet built'
-
-
-class Trigger(object):
-
-    def run(self):
-        pass
+    
 
 base_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-workdir = os.path.join(base_dir, 'checkout')
+workdir = os.path.join(base_dir, 'working')
 chroots_dir = os.path.join(base_dir, 'chroots')
 server_url = 'http://b2f7f6ee.ngrok.io'
 
@@ -44,4 +36,13 @@ logger = get_task_logger('builder')
 
 redis_client = redis.Redis()
 
-gh = login(os.environ.get('GITHUB_USER'), password=os.environ.get('GITHUB_PASSWORD'))
+
+token = id = ''
+with open(os.path.join(base_dir, '.github_auth'), 'r') as fd:
+    token = fd.readline().strip()  # Can't hurt to be paranoid
+    id = fd.readline().strip()
+
+gh = login(token=token)
+
+if not gh:
+    raise Exception('Unable to sign into GitHub!')

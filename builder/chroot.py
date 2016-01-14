@@ -16,8 +16,7 @@ class Chroot:
 
     def create(self):
         self.create_base()
-        run(['rsync', '-a', '--delete', '-q', '-W', '-x',  self.base_dir + '/', self.workdir],
-            capture_stdout=False, sudo=True)
+        rsync(self.base_dir, self.workdir, sudo=True)
 
     def create_base(self):
         if not os.path.exists(self.base_dir):

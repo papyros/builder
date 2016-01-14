@@ -14,7 +14,9 @@ if __name__ == '__main__':
 
     if cmd == 'ci':
         builder.continuous.execute(*args)
-    if cmd == 'reload':
+    elif cmd == 'iso':
+        builder.isos.execute(*args)
+    elif cmd == 'reload':
         builder.continuous.create_webhooks()
     else:
         print('Command not found: ' + cmd)

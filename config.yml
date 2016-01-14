@@ -9,6 +9,6 @@ ostree:
     - name: testing/{arch}
       git: papyros/repository
 isos:
-    - name: testing/{arch}
+    - name: testing
       git: papyros/repository#branch=testing
       config: iso_config.yml

@@ -13,30 +13,25 @@ class ContinuousIntegration(Container):
     def __init__(self, config):
         self.workdir = os.path.join(workdir, 'continuous')
         self.config = config
-        self.repos = [Repository(name, os.path.join(
-            self.workdir, name)) for name in config]
+        self.objects = [Repository(name, os.path.join(self.workdir, name)) for name in config]
 
     def execute(self, repo_name):
-        repo = next(repo for repo in self.repos if repo.name == repo_name)
+        repo = self.get(repo_name)
         repo.build()
 
     def process_pull_request(self, pull_request):
         repo_name = pull_request['base']['repo']['full_name']
-        repo = next((repo for repo in self.repos if repo.name == repo_name), None)
+        repo = self.get(repo_name)
         if not repo:
             raise Exception("Repository not registered: " + repo_name)
         repo.build_pull_request(pull_request=pull_request)
 
     def process_push(self, info):
         repo_name = info['repository']['full_name']
-        repo = next((repo for repo in self.repos if repo.name == repo_name), None)
+        repo = self.get(repo_name)
         if not repo:
             raise Exception("Repository not registered: " + repo_name)
         repo.build_specific_commit(info['after'])
-
-    @property
-    def objects(self):
-        return self.repos
 
     def create_webhooks(self):
         for repo in self.repos:

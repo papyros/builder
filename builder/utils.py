@@ -85,7 +85,8 @@ def locked(function=None, key="", timeout=None):
 
             return ret_value
 
-        _caller.__name__ == run_func.__name__
+        _caller.__name__ = run_func.__name__
+        _caller.__module__ = run_func.__module__
 
         return _caller
 

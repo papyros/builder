@@ -1,4 +1,5 @@
 *.pyc
 chroots
-checkout
+working
 __pycache__
+.github_auth

@@ -25,3 +25,8 @@ def arch_nspawn(workdir, cmd, bind_ro=None, bind_rw=None):
 
 def hub(cmd, workdir):
     run(['hub'] + cmd, workdir=workdir, capture_stdout=False)
+
+
+def rsync(source_dir, dest_dir, sudo=False):
+    run(['rsync', '-a', '--delete', '-q', '-W', '-x', source_dir + '/', dest_dir],
+        capture_stdout=False, sudo=sudo)
