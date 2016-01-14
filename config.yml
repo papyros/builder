@@ -1,4 +1,5 @@
 continuous:
+    - papyros/builder
     - papyros/libpapyros
     - iBeliever/Spoon-Knife
 repositories:

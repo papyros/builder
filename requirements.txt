@@ -1,0 +1,4 @@
+celery[redis]
+pyaml
+pep8
+pyflakes
