@@ -13,6 +13,9 @@ def handle_github_event():
         if action == 'opened' or action == 'synchronize':
             builder.continuous.process_pull_request(request.json['pull_request'])
             return jsonify(status='success')
+    elif type == 'push':
+        builder.continuous.process_push(request.json)
+        return jsonify(status='success')
     return jsonify(status='ignored')
 
 if __name__ == "__main__":

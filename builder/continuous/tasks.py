@@ -1,19 +1,17 @@
 from builder.chroot import Chroot
 from builder.core import celery, gh, logger
+from builder.utils import locked
 
 
-@celery.task
-def build_continuous(repo, patch_url=None, branch=None):
+@celery.task(bind=True)
+@locked(key="chroot", timeout=60 * 60 * 2)
+def build_continuous(self, repo, sha=None, branch=None, patch_url=None):
     chroot = Chroot(repo.name)
     chroot.bind_rw = [repo.workdir + ':/source', '/var/cache/npm:/npm_cache']
 
     logger.info('Building repo: ' + repo.name)
     logger.info('Fetching sources...')
-    repo.source.pull(branch)
-
-    if patch_url is not None:
-        logger.info("Applying patch...")
-        repo.source.patch(patch_url)
+    repo.source.checkout(sha=sha, branch=branch, patch_url=patch_url)
 
     config = repo.config
 
@@ -40,8 +38,8 @@ def build_continuous(repo, patch_url=None, branch=None):
 
 
 @celery.task
-def update_commit_status(repo_name, sha, state, description):
-    repo = gh.repository(repo_name)
+def update_commit_status(repo_name, sha, state, description, context):
+    repo = gh.repository(*repo_name.split('/'))
 
-    status = repository.create_status(sha=sha, state=state, description=description,
-                                      context='continuous-integration/builder')
+    status = repo.create_status(sha=sha, state=state, description=description,
+            context=context)

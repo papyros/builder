@@ -1,12 +1,14 @@
 import os
 import os.path
 
+import redis
 from celery import Celery, Task
 from celery.utils.log import get_task_logger
 from github3 import login
 
 
 class Container(object):
+
     @property
     def triggers(self):
         return []
@@ -15,13 +17,17 @@ class Container(object):
     def objects(self):
         return []
 
+
 class JobTask(Task):
     status = 'Not yet started'
+
 
 class Object(object):
     status = 'Not yet built'
 
+
 class Trigger(object):
+
     def run(self):
         pass
 
@@ -34,5 +40,7 @@ celery.config_from_object('config')
 celery.Task = JobTask
 
 logger = get_task_logger('builder')
+
+redis_client = redis.Redis()
 
 gh = login(os.environ.get('GITHUB_USER'), password=os.environ.get('GITHUB_PASSWORD'))

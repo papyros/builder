@@ -1,30 +1,40 @@
-from builder.core import Container, Object, workdir, chroots_dir, celery, logger
-from builder.utils import load_yaml, run
-from builder.sources import GitSource
-from .tasks import build_continuous
-import os, os.path
+import os
+import os.path
 import shutil
+
+from builder.core import (Container, Object, celery, chroots_dir, logger,
+                          workdir)
+from builder.sources import GitSource
+from builder.utils import load_yaml, run
+
+from .tasks import build_continuous, update_commit_status
 
 
 class ContinuousIntegration(Container):
+
     def __init__(self, config):
         self.workdir = os.path.join(workdir, 'continuous')
         self.config = config
-        self.repos = [Repository(name, os.path.join(self.workdir, name)) for name in config]
+        self.repos = [Repository(name, os.path.join(
+            self.workdir, name)) for name in config]
 
     def execute(self, repo_name):
         repo = next(repo for repo in self.repos if repo.name == repo_name)
         repo.build()
 
     def process_pull_request(self, pull_request):
-        print('Processing pull request')
         repo_name = pull_request['base']['repo']['full_name']
         repo = next((repo for repo in self.repos if repo.name == repo_name), None)
         if not repo:
             raise Exception("Repository not registered: " + repo_name)
-        patch_url = pull_request['patch_url']
-        branch = pull_request['base']['ref']
-        repo.build(branch=branch, patch_url=patch_url)
+        repo.build_pull_request(pull_request=pull_request)
+
+    def process_push(self, info):
+        repo_name = info['repository']['full_name']
+        repo = next((repo for repo in self.repos if repo.name == repo_name), None)
+        if not repo:
+            raise Exception("Repository not registered: " + repo_name)
+        repo.build_specific_commit(info['after'])
 
     @property
     def objects(self):
@@ -32,6 +42,7 @@ class ContinuousIntegration(Container):
 
 
 class Repository(Object):
+
     def __init__(self, name, workdir):
         super().__init__()
         self.name = name
@@ -41,6 +52,41 @@ class Repository(Object):
     def build(self, branch=None, patch_url=None):
         print('Starting CI build of ' + self.name)
         return build_continuous.delay(self, branch=branch, patch_url=patch_url)
+
+    def build_specific_commit(self, sha):
+        context = 'continuous-integration/builder/push'
+
+        print('Starting CI build of {} ({})'.format(self.name, sha))
+        success_callback = update_commit_status.si(self.name, sha, 'success',
+                'Build succeeded!', context)
+        error_callback = update_commit_status.si(self.name, sha, 'failure',
+                'Build failed!', context)
+        build_task = build_continuous.subtask(kwargs={'repo': self, 'sha': sha},
+                immutable=True, link=success_callback, link_error=error_callback)
+        start_task = update_commit_status.subtask((self.name, sha, 'pending',
+                'Running CI build', context), link=build_task)
+        return start_task.delay()
+
+    def build_pull_request(self, pull_request):
+        context = 'continuous-integration/builder/pr'
+
+        patch_url = pull_request['patch_url']
+        branch = pull_request['base']['ref']
+
+        source_repo = pull_request['head']['repo']['full_name']
+        source_sha = pull_request['head']['sha']
+
+        print('Starting CI build of pull request for ' + self.name)
+        success_callback = update_commit_status.si(source_repo, source_sha, 'success',
+                'Build succeeded!', context)
+        error_callback = update_commit_status.si(source_repo, source_sha, 'failure',
+                'Build failed!', context)
+        build_task = build_continuous.subtask(kwargs={'repo': self, 'branch': branch,
+                                                      'patch_url': patch_url},
+                immutable=True, link=success_callback, link_error=error_callback)
+        start_task = update_commit_status.subtask((source_repo, source_sha, 'pending',
+                'Running CI build', context), link=build_task)
+        return start_task.delay()
 
     @property
     def config(self):
