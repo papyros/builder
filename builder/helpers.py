@@ -10,8 +10,8 @@ def mkarchroot(workdir, packages=None):
     parent_dir = os.path.dirname(workdir)
     if not os.path.exists(parent_dir):
         os.makedirs(parent_dir)
-    run(['mkarchroot', workdir] + packages, sudo=True,
-            capture_stdout=False)
+    run(['mkarchroot', workdir] + packages, sudo=True, capture_stdout=False)
+
 
 def arch_nspawn(workdir, cmd, bind_ro=None, bind_rw=None):
     if not bind_ro:
@@ -21,6 +21,7 @@ def arch_nspawn(workdir, cmd, bind_ro=None, bind_rw=None):
     bind_ro = ['--bind-ro=' + bind for bind in bind_ro]
     bind_rw = ['--bind=' + bind for bind in bind_rw]
     run(['arch-nspawn', workdir] + bind_ro + bind_rw + cmd, capture_stdout=False)
+
 
 def hub(cmd, workdir):
     run(['hub'] + cmd, workdir=workdir, capture_stdout=False)

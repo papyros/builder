@@ -3,5 +3,4 @@ dependencies:
     - python-pip
 build:
     - pip install -r requirements.txt
-    - pep8 .
-    - pyflakes .
+    - flake8

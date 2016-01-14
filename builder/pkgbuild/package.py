@@ -1,9 +1,12 @@
-from .helpers import pkgversion, pkgdepends, pkgprovides, pkgsources, gitrev, changelog
-from .helpers import find_files, repoadd, ccm, ccm_repoadd
-import tarfile
 import os.path
 import re
+
 import downloader
+
+from ..core import Object
+from .helpers import (ccm, ccm_repoadd, changelog, find_files, gitrev,
+                      pkgdepends, pkgprovides, pkgsources, pkgversion, repoadd)
+
 
 class Package(Object):
     required = False
@@ -92,9 +95,10 @@ class Package(Object):
 
     @property
     def pkg_regex(self):
-        return re.compile(r'{}.*?\-(r?\d.*)\-({}|any)\.pkg\.tar\.xz'.format(self.name, self.repo.arch))
+        return re.compile(r'{}.*?\-(r?\d.*)\-({}|any)\.pkg\.tar\.xz'.format(self.name,
+                                                                            self.repo.arch))
 
     @property
     def latest_pkg_regex(self):
         return re.compile(r'.*\-{}\-({}|any)\.pkg\.tar\.xz'.format(self.latest_version,
-                self.repo.arch))
+                                                                   self.repo.arch))

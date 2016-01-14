@@ -1,9 +1,10 @@
-import re
-import yaml
 import os.path
-from builder.core import base_dir, redis_client
-
+import re
 import subprocess
+
+import yaml
+
+from builder.core import base_dir, redis_client
 
 
 def run(cmd, workdir=None, capture_stdout=True, sudo=False):
@@ -16,6 +17,7 @@ def run(cmd, workdir=None, capture_stdout=True, sudo=False):
         return completion.stdout.strip()
     else:
         return subprocess.run(cmd, cwd=workdir, check=True)
+
 
 def helper(type, name, args, workdir, sudo=False):
     return run([os.path.join(base_dir, 'helpers', type, name)] + args, workdir=workdir, sudo=sudo)
@@ -32,8 +34,8 @@ def load_yaml(fileName):
 
 
 def save_yaml(fileName, data):
-	with open(fileName, 'w') as file:
-		file.write(yaml.dump(data, default_flow_style=False))
+    with open(fileName, 'w') as file:
+        file.write(yaml.dump(data, default_flow_style=False))
 
 
 def flatten(outer_list):

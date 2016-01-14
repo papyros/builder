@@ -36,7 +36,11 @@ def build_continuous(self, repo, sha=None, branch=None, patch_url=None):
     logger.info('Running build steps...')
     for cmd in config.get('build', []):
         logger.info('--> ' + cmd)
-        chroot.run(cmd.format(srcdir='/build'), workdir='/build')
+        try:
+            chroot.run(cmd.format(srcdir='/build'), workdir='/build')
+        except Exception as ex:
+            logger.error("Continous integration failed: " + cmd)
+            raise ex
 
     logger.info('Repository passed continuous integration: ' + repo.name)
 
@@ -45,5 +49,5 @@ def build_continuous(self, repo, sha=None, branch=None, patch_url=None):
 def update_commit_status(repo_name, sha, state, description, context):
     repo = gh.repository(*repo_name.split('/'))
 
-    status = repo.create_status(sha=sha, state=state, description=description,
-            context=context)
+    repo.create_status(sha=sha, state=state, description=description,
+                       context=context)

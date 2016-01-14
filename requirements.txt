@@ -1,4 +1,3 @@
 celery[redis]
-pyaml
-pep8
-pyflakes
+pyyaml
+flake8

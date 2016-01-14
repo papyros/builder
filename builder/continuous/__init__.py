@@ -1,11 +1,9 @@
 import os
 import os.path
-import shutil
 
-from builder.core import (Container, Object, celery, chroots_dir, logger,
-                          workdir, gh, server_url)
+from builder.core import Container, Object, workdir, gh, server_url
 from builder.sources import GitSource
-from builder.utils import load_yaml, run
+from builder.utils import load_yaml
 
 from .tasks import build_continuous, update_commit_status
 
@@ -50,7 +48,7 @@ class ContinuousIntegration(Container):
                     'content_type': 'json'
                 }
 
-                hook = gh_repo.create_hook(name, config, events=['push', 'pull_request'])
+                gh_repo.create_hook(name, config, events=['push', 'pull_request'])
             except Exception as ex:
                 print('Failed to create webhook for: ' + repo.name)
                 print(ex.errors)
@@ -73,13 +71,14 @@ class Repository(Object):
 
         print('Starting CI build of {} ({})'.format(self.name, sha))
         success_callback = update_commit_status.si(self.name, sha, 'success',
-                'Build succeeded!', context)
+                                                   'Build succeeded!', context)
         error_callback = update_commit_status.si(self.name, sha, 'failure',
-                'Build failed!', context)
+                                                 'Build failed!', context)
         build_task = build_continuous.subtask(kwargs={'repo': self, 'sha': sha},
-                immutable=True, link=success_callback, link_error=error_callback)
+                                              immutable=True, link=success_callback,
+                                              link_error=error_callback)
         start_task = update_commit_status.subtask((self.name, sha, 'pending',
-                'Running CI build', context), link=build_task)
+                                                   'Running CI build', context), link=build_task)
         return start_task.delay()
 
     def build_pull_request(self, pull_request):
@@ -93,14 +92,15 @@ class Repository(Object):
 
         print('Starting CI build of pull request for ' + self.name)
         success_callback = update_commit_status.si(source_repo, source_sha, 'success',
-                'Build succeeded!', context)
+                                                   'Build succeeded!', context)
         error_callback = update_commit_status.si(source_repo, source_sha, 'failure',
-                'Build failed!', context)
+                                                 'Build failed!', context)
         build_task = build_continuous.subtask(kwargs={'repo': self, 'branch': branch,
                                                       'patch_url': patch_url},
-                immutable=True, link=success_callback, link_error=error_callback)
+                                              immutable=True, link=success_callback,
+                                              link_error=error_callback)
         start_task = update_commit_status.subtask((source_repo, source_sha, 'pending',
-                'Running CI build', context), link=build_task)
+                                                   'Running CI build', context), link=build_task)
         return start_task.delay()
 
     @property

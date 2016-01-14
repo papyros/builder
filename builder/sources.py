@@ -31,13 +31,16 @@ class GitSource(Source):
 
         if self.exists:
             self.repo = Repo(workdir)
+        else:
+            print("WARNING: repo doesn't exist: " + workdir)
 
-    def pull(branch=None):
+    def pull(self, branch=None):
         self.checkout(branch=branch)
 
     # TODO: Implement progress
     def checkout(self, sha=None, branch=None, patch_url=None):
         if self.exists:
+            print("Fetching repo...")
             try:
                 self.repo.git.rebase('--abort')
             except:

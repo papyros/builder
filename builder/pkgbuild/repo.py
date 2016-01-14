@@ -1,11 +1,14 @@
 import os.path
-import networkx as nx
-
-from .package import Package
-from utils import load_yaml, flatten, save_yaml
-from git import Actor, Repo
 from datetime import datetime
 from shutil import copytree, rmtree
+
+import networkx as nx
+from git import Actor, Repo
+
+from utils import flatten, load_yaml, save_yaml
+
+from .package import Package
+
 
 class Repository:
 
@@ -84,7 +87,7 @@ class Repository:
         pkg_dir = os.path.join(self.workdir, 'packages')
         for file in os.listdir(pkg_dir):
             if (os.path.isdir(os.path.join(pkg_dir, file)) and
-                os.path.exists(os.path.join(pkg_dir, file, 'PKGBUILD'))):
+                    os.path.exists(os.path.join(pkg_dir, file, 'PKGBUILD'))):
                 packages.append(file)
         return packages
 
@@ -114,6 +117,7 @@ class Repository:
 
             if name in possible_names:
                 return pkg
+
 
 class RepositoryBuildJob:
     def __init__(self, repo, packages):

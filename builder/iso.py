@@ -1,9 +1,12 @@
 #! /usr/bin/env python3
-import os.path, os
-import sys
+import os
+import os.path
 import shutil
 import subprocess
-from builder.utils import append_to_file, replace_in_file, load_yaml
+import sys
+
+from builder.utils import append_to_file, load_yaml, replace_in_file
+
 
 class ArchISO(object):
     packages_i686 = []
@@ -20,9 +23,8 @@ class ArchISO(object):
         self.packages = packages
 
     def add_repo(self, name, url):
-        self.custom_repos.append(('[{}]\n' +
-                'SigLevel = Optional TrustAll\n' +
-                'Server = {}').format(name, url))
+        self.custom_repos.append(('[{}]\n' + 'SigLevel = Optional TrustAll\n' +
+                                  'Server = {}').format(name, url))
 
     def add_customization(self, cmd):
         self.customizations.append(cmd)
@@ -57,7 +59,7 @@ class ArchISO(object):
 
         # Add any additional repos
         replace_in_file(self.path('pacman.conf'), r'\#\[testing\]',
-                '\n\n'.join(self.custom_repos) + '\n\n#[testing]')
+                        '\n\n'.join(self.custom_repos) + '\n\n#[testing]')
 
         # Add the requested packages
         append_to_file(self.path('packages.both'), self.packages)
@@ -69,7 +71,7 @@ class ArchISO(object):
 
         if self.graphical_target:
             replace_in_file(self.path('airootfs/root/customize_airootfs.sh'),
-                    r'multi-user.target', 'graphical.target')
+                            r'multi-user.target', 'graphical.target')
 
         print('>>>>> Building...')
         cmd = 'sudo ' + self.path('build.sh')

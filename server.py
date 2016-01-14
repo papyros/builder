@@ -4,6 +4,7 @@ import sys
 
 app = Flask(__name__)
 
+
 @app.route("/github/event_handler", methods=['POST'])
 def handle_github_event():
     type = request.headers.get('X_GITHUB_EVENT', None)

@@ -3,6 +3,7 @@ from git import Repo
 import os.path
 import progressbar
 
+
 def git_clone(url, path, bare=False):
     branch = None
     if '#' in url:

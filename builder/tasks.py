@@ -1,2 +1,2 @@
-from builder.core import celery
-from builder.continuous.tasks import *
+from builder.core import celery  # noqa
+from builder.continuous.tasks import *  # noqa
