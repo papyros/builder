@@ -15,6 +15,10 @@ def build_continuous(self, repo, sha=None, branch=None, patch_url=None):
 
     config = repo.config
 
+    if not config:
+        logger.warn('Repository has no build config: ' + repo.name)
+        return
+
     logger.info('Creating chroot...')
     chroot.create()
 

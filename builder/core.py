@@ -34,6 +34,7 @@ class Trigger(object):
 base_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 workdir = os.path.join(base_dir, 'checkout')
 chroots_dir = os.path.join(base_dir, 'chroots')
+server_url = 'http://b2f7f6ee.ngrok.io'
 
 celery = Celery('builder')
 celery.config_from_object('config')

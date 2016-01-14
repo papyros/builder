@@ -3,7 +3,7 @@ import os.path
 import shutil
 
 from builder.core import (Container, Object, celery, chroots_dir, logger,
-                          workdir)
+                          workdir, gh, server_url)
 from builder.sources import GitSource
 from builder.utils import load_yaml, run
 
@@ -39,6 +39,21 @@ class ContinuousIntegration(Container):
     @property
     def objects(self):
         return self.repos
+
+    def create_webhooks(self):
+        for repo in self.repos:
+            try:
+                gh_repo = gh.repository(*repo.name.split('/'))
+                name = 'web'
+                config = {
+                    'url': server_url + '/github/event_handler',
+                    'content_type': 'json'
+                }
+
+                hook = gh_repo.create_hook(name, config, events=['push', 'pull_request'])
+            except Exception as ex:
+                print('Failed to create webhook for: ' + repo.name)
+                print(ex.errors)
 
 
 class Repository(Object):
@@ -90,4 +105,6 @@ class Repository(Object):
 
     @property
     def config(self):
-        return load_yaml(os.path.join(self.workdir, '.builder.yml'))
+        filename = os.path.join(self.workdir, '.builder.yml')
+        if os.path.exists(filename):
+            return load_yaml(filename)
