@@ -3,9 +3,9 @@ from builder.utils import locked, run, replace_in_file, append_to_file
 from builder.helpers import rsync
 
 
-@celery.task
+@celery.task(bind=True)
 @locked(key="iso", timeout=60 * 60 * 2)
-def build_iso(iso, branch):
+def build_iso(self, iso, branch):
     logger.info('Fetching ISO configuration...')
     iso.source.checkout(branch=branch)
 

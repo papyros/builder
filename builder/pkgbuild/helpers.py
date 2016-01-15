@@ -3,7 +3,7 @@ import os
 import os.path
 from shutil import copy
 
-import utils
+from builder import utils
 
 
 def helper(name, args, workdir, sudo=False):

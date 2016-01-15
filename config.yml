@@ -3,11 +3,11 @@ continuous:
     - papyros/libpapyros
     - iBeliever/Spoon-Knife
 repositories:
-    - name: testing/{arch}
+    - name: testing
       git: papyros/repository#branch=testing
 ostree:
-    - name: testing/{arch}
-      git: papyros/repository
+    - name: testing
+      git: papyros/repository#branch=testing
 isos:
     - name: testing
       git: papyros/repository#branch=testing

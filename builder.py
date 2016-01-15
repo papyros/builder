@@ -16,6 +16,8 @@ if __name__ == '__main__':
         builder.continuous.execute(*args)
     elif cmd == 'iso':
         builder.isos.execute(*args)
+    elif cmd == 'repo':
+        builder.repositories.execute(*args)
     elif cmd == 'reload':
         builder.continuous.create_webhooks()
     else:

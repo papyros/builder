@@ -6,6 +6,7 @@ from celery import Celery, Task
 from celery.utils.log import get_task_logger
 from github3 import login
 
+from .sources import GitSource
 
 class Container(object):
     objects = []
@@ -21,7 +22,18 @@ class JobTask(Task):
 class Object(object):
     name = None
     status = 'Not yet built'
-    
+
+    def set_source(self, workdir, url):
+        branch = None
+        if '#' in url:
+            url, other = url.split('#', 1)
+
+            if '=' in other:
+                reftype, branch = other.split('=')
+
+        self.source = GitSource(workdir, url)
+        self.branch = branch
+
 
 base_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 workdir = os.path.join(base_dir, 'working')
@@ -32,7 +44,11 @@ celery = Celery('builder')
 celery.config_from_object('config')
 celery.Task = JobTask
 
-logger = get_task_logger('builder')
+if celery.conf['CELERY_ALWAYS_EAGER']:
+    import logging as logger
+    logger.basicConfig(level=logger.DEBUG)
+else:
+    logger = get_task_logger('builder')
 
 redis_client = redis.Redis()
 

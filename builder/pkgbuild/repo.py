@@ -5,23 +5,21 @@ from shutil import copytree, rmtree
 import networkx as nx
 from git import Actor, Repo
 
-from utils import flatten, load_yaml, save_yaml
+from ..utils import flatten, load_yaml, save_yaml
 
 from .package import Package
 
 
 class Repository:
-
-    def __init__(self, name, arch, packages, workdir):
+    def __init__(self, name, arch, config, workdir):
         self.name = name
         self.arch = arch
         self.workdir = workdir
         self.repo_dir = os.path.join(workdir, 'built_packages')
         self.database = os.path.join(self.repo_dir, name + '.db.tar.gz')
-        self.package_names = packages
 
-    def triggers(self):
-        return
+        self.package_names = flatten([config['channels'][name]['packages']
+                                     for name in config['channels']])
 
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
@@ -75,13 +73,6 @@ class Repository:
         for package in self.packages:
             package.refresh()
 
-    @staticmethod
-    def from_channel_config(config, arch, workdir):
-        if isinstance(config, str):
-            config = load_yaml(config)
-        packages = flatten([config['channels'][name]['packages'] for name in config['channels']])
-        return Repository(config['name'].lower(), arch, packages, workdir)
-
     def find_packages(self):
         packages = []
         pkg_dir = os.path.join(self.workdir, 'packages')
@@ -117,42 +108,6 @@ class Repository:
 
             if name in possible_names:
                 return pkg
-
-
-class RepositoryBuildJob:
-    def __init__(self, repo, packages):
-        self.repo = repo
-        self.packages
-
-    def run(self):
-        self.build()
-        self.publish('/srv/http/repos/{name}/{arch}'.format(name=self.name, arch=self.arch))
-
-    def build(self):
-        print('Building packages')
-        if os.path.exists(self.repo.repo_dir):
-            rmtree(self.repo.repo_dir)
-        for package in self.repo.packages:
-            self.status = 'Building {}'.format(package.name)
-            package.build()
-
-    def publish(self, export_dir):
-        self.status = 'Publishing changes'
-        for package in self.repo.packages:
-            self.repo.buildinfo.get('packages')[package.name] = package.gitrev
-        self.repo.buildinfo['build_number'] = self.build_number
-        save_yaml(os.path.join(self.repo.workdir, 'buildinfo.yml'), self.repo.buildinfo)
-
-        repo = Repo(self.repo.workdir)
-        repo.index.add(['buildinfo.yml'] +
-                       ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in self.packages])
-        repo.index.commit('Build {} at {:%c}\n\n{}'.format(self.build_number, datetime.now(),
-                                                           self.changelog),
-                          author=Actor("Builder", "builder@papyros.io"))
-        repo.remotes.origin.push()
-
-        rmtree(export_dir)
-        copytree(self.repo.repo_dir, export_dir)
 
     @property
     def changelog(self):

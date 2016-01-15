@@ -3,8 +3,6 @@ import os.path
 
 from git import Repo
 
-from builder.helpers import hub
-
 
 def git_url(repo_name):
     return 'git@github.com:{}.git'.format(repo_name)
@@ -35,7 +33,12 @@ class GitSource(Source):
             print("WARNING: repo doesn't exist: " + workdir)
 
     def pull(self, branch=None):
-        self.checkout(branch=branch)
+        if self.exists:
+            self.repo.remotes.origin.pull()
+        else:
+            self.repo = Repo.clone_from(self.url, self.workdir)
+            self.repo.head.reference = self.repo.refs[branch]
+            self.repo.head.reset(index=True, working_tree=True)
 
     # TODO: Implement progress
     def checkout(self, sha=None, branch=None, patch_url=None):
@@ -62,8 +65,7 @@ class GitSource(Source):
                 branch = 'master'
             self.repo.head.reference = self.repo.refs[branch]
             self.repo.head.reset(index=True, working_tree=True)
-            self.repo.git.reset(
-                '--hard', 'origin/{}'.format(branch))
+            self.repo.git.reset('--hard', 'origin/{}'.format(branch))
             self.repo.git.clean('-xfd')
 
         if patch_url is not None:
@@ -71,6 +73,7 @@ class GitSource(Source):
             self.patch(patch_url=patch_url)
 
     def patch(self, patch_url):
+        from builder.helpers import hub
         hub(['am', '-3', patch_url], workdir=self.workdir)
 
     def poll_trigger(self, action):
