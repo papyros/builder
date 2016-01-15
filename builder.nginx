@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name dash.papyros.com;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/builder/builder/builder.sock;
+    }
+}

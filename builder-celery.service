@@ -1,0 +1,10 @@
+[Unit]
+Description=Celery worker for Builder
+Wants=redis
+After=redis
+
+[Service]
+ExecStart=/usr/bin/celery -A builder.tasks worker --loglevel=info --autoreload --workdir=/home/builder/builder
+
+[Install]
+WantedBy=multi-user.target

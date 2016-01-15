@@ -1,0 +1,15 @@
+[Unit]
+Description=Flask server for Builder
+After=syslog.target
+
+[Service]
+ExecStart=/usr/bin/uwsgi --ini /home/builder/builder/builder.ini
+RuntimeDirectory=uwsgi # Requires systemd version 211 or newer
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
