@@ -1,0 +1,10 @@
+[Unit]
+Description=Flower dashboard for Builder
+Wants=redis
+After=redis
+
+[Service]
+ExecStart=/usr/bin/celery flower -A builder.tasks --loglevel=info --autoreload --workdir=/home/builder/builder --port=5555
+
+[Install]
+WantedBy=multi-user.target
