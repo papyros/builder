@@ -34,7 +34,7 @@ class ContinuousIntegration(Container):
         repo.build_specific_commit(info['after'])
 
     def create_webhooks(self):
-        for repo in self.repos:
+        for repo in self.objects:
             try:
                 gh_repo = gh.repository(*repo.name.split('/'))
                 name = 'web'
