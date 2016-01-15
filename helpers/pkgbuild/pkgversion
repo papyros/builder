@@ -61,5 +61,3 @@ if [ "`type -t pkgver`" = 'function' ]; then
 else
     echo $pkgver-$pkgrel
 fi
-
-rm -rf $srcdir

@@ -3,8 +3,9 @@ continuous:
     - papyros/libpapyros
     - iBeliever/Spoon-Knife
 repositories:
-    - name: testing
+    - name: papyros-testing
       git: papyros/repository#branch=testing
+      export: /home/mspencer/repos/papyros-testing
 ostree:
     - name: testing
       git: papyros/repository#branch=testing

@@ -7,7 +7,7 @@ from .helpers import (ccm, ccm_repoadd, changelog, find_files, gitrev,
                       pkgdepends, pkgprovides, pkgsources, pkgversion, repoadd)
 
 
-class Package(Object):
+class Package(object):
     required = False
 
     def __init__(self, repo, name):

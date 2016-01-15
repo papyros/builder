@@ -11,10 +11,11 @@ from .package import Package
 
 
 class Repository:
-    def __init__(self, name, arch, config, workdir):
+    def __init__(self, name, arch, config, workdir, export_dir):
         self.name = name
         self.arch = arch
         self.workdir = workdir
+        self.export_dir = export_dir
         self.repo_dir = os.path.join(workdir, 'built_packages')
         self.database = os.path.join(self.repo_dir, name + '.db.tar.gz')
 

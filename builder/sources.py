@@ -33,15 +33,10 @@ class GitSource(Source):
             print("WARNING: repo doesn't exist: " + workdir)
 
     def pull(self, branch=None):
-        if self.exists:
-            self.repo.remotes.origin.pull()
-        else:
-            self.repo = Repo.clone_from(self.url, self.workdir)
-            self.repo.head.reference = self.repo.refs[branch]
-            self.repo.head.reset(index=True, working_tree=True)
+        self.checkout(branch=branch, clean=False)
 
     # TODO: Implement progress
-    def checkout(self, sha=None, branch=None, patch_url=None):
+    def checkout(self, sha=None, branch=None, patch_url=None, clean=True):
         if self.exists:
             print("Fetching repo...")
             try:
@@ -66,6 +61,8 @@ class GitSource(Source):
             self.repo.head.reference = self.repo.refs[branch]
             self.repo.head.reset(index=True, working_tree=True)
             self.repo.git.reset('--hard', 'origin/{}'.format(branch))
+
+        if clean:
             self.repo.git.clean('-xfd')
 
         if patch_url is not None:

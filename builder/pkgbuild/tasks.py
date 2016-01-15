@@ -1,8 +1,12 @@
 import os.path
+from datetime import datetime
+from shutil import rmtree
 
 from builder.core import celery, gh, logger
 from builder.helpers import rsync
-from builder.utils import append_to_file, locked, replace_in_file, run
+from builder.utils import (append_to_file, locked, replace_in_file, run,
+                           save_yaml)
+from git import Actor
 
 
 @celery.task(bind=True)
@@ -29,8 +33,7 @@ def build_repository(self, repo, branch):
     logger.info('Building packages...')
     if os.path.exists(config.repo_dir):
         rmtree(config.repo_dir)
-    for package in self.repo.packages:
-        self.status = 'Building {}'.format(package.name)
+    for package in config.packages:
         package.build()
 
     logger.info('Saving build information...')
@@ -40,12 +43,13 @@ def build_repository(self, repo, branch):
     save_yaml(os.path.join(config.workdir, 'buildinfo.yml'), config.buildinfo)
 
     logger.info('Committing build information...')
-    repo.source.index.add(['buildinfo.yml'] +
-                   ['packages/{}/PKGBUILD'.format(pkg.name) for pkg in config.packages])
-    repo.source.index.commit('Build {} at {:%c}\n\n{}'.format(config.build_number, datetime.now(),
-                                                       config.changelog),
-                      author=Actor("Builder", "builder@papyros.io"))
-    repo.source.remotes.origin.push()
+    repo.source.repo.index.add(['buildinfo.yml'] + ['packages/{}/PKGBUILD'.format(pkg.name)
+                                                    for pkg in config.packages])
+    repo.source.repo.index.commit('Build {} at {:%c}\n\n{}'.format(config.build_number,
+                                                                   datetime.now(),
+                                                                   config.changelog),
+                                  author=Actor("Builder", "builder@papyros.io"))
+    repo.source.repo.remotes.origin.push()
 
     logger.info('Exporting built packages...')
-    rsync(config.repo_dir, export_dir, sudo=True)
+    rsync(config.repo_dir, config.export_dir, sudo=True)

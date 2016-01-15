@@ -20,9 +20,11 @@ class RepositoryContainer(Container):
 
 class RepositoryInfo(Object):
     def __init__(self, config, arch, parent_dir):
-        self.name = config['name'] + '/' + arch
+        self._name = config['name']
+        self.name = self._name + '/' + arch
         self.arch = arch
-        self.workdir = os.path.join(parent_dir, config['name'], arch)
+        self.workdir = os.path.join(parent_dir, self._name, arch)
+        self.export_dir = config['export']
         self.set_source(self.workdir, config['git'])
 
     def build(self):
@@ -34,4 +36,6 @@ class RepositoryInfo(Object):
         filename = os.path.join(self.workdir, 'channels.yml')
 
         if os.path.exists(filename):
-            return Repository(self.name, self.arch, load_yaml(filename), self.workdir)
+            # TODO: Figure out how to avoid hardcoding this
+            return Repository(self._name, self.arch, load_yaml(filename), self.workdir,
+                              self.export_dir)

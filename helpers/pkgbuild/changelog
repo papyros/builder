@@ -61,10 +61,8 @@ else
             pkgver="?"
         fi
     fi
-    
+
     if [ $prev_ver != $pkgver ]; then
         echo " * Update $prev_ver -> $pkgver"
     fi
 fi
-
-rm -rf $srcdir
