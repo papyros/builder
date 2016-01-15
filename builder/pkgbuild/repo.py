@@ -1,11 +1,8 @@
 import os.path
-from datetime import datetime
-from shutil import copytree, rmtree
 
 import networkx as nx
-from git import Actor, Repo
 
-from ..utils import flatten, load_yaml, save_yaml
+from ..utils import flatten, load_yaml
 
 from .package import Package
 

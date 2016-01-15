@@ -2,7 +2,6 @@ import os.path
 import re
 
 from builder import downloader
-from ..core import Object
 from .helpers import (ccm, ccm_repoadd, changelog, find_files, gitrev,
                       pkgdepends, pkgprovides, pkgsources, pkgversion, repoadd)
 

@@ -2,8 +2,7 @@ import os
 import os.path
 
 from builder.core import chroots_dir
-from builder.helpers import arch_nspawn, mkarchroot
-from builder.utils import run
+from builder.helpers import arch_nspawn, mkarchroot, rsync
 
 
 class Chroot:

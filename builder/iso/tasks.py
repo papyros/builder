@@ -1,4 +1,4 @@
-from builder.core import celery, gh, logger
+from builder.core import celery, logger
 from builder.utils import locked, run, replace_in_file, append_to_file
 from builder.helpers import rsync
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 from github3 import authorize
-from getpass import getuser, getpass
+from getpass import getpass
 
 user = input('Username: ')
 password = ''

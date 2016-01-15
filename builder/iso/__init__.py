@@ -1,7 +1,7 @@
 import os
 import os.path
 
-from builder.core import Container, Object, workdir, gh, server_url
+from builder.core import Container, Object, workdir
 from builder.sources import GitSource
 from builder.utils import load_yaml
 
@@ -47,6 +47,7 @@ class ArchISO(Object):
         filename = os.path.join(self.workdir, self.config_filename)
         if os.path.exists(filename):
             return ISOBuild(load_yaml(filename), os.path.join(self.workdir, 'build'))
+
 
 class ISOBuild(object):
     custom_repos = []

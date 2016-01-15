@@ -2,10 +2,9 @@ import os.path
 from datetime import datetime
 from shutil import rmtree
 
-from builder.core import celery, gh, logger
+from builder.core import celery, logger
 from builder.helpers import rsync
-from builder.utils import (append_to_file, locked, replace_in_file, run,
-                           save_yaml)
+from builder.utils import locked, save_yaml
 from git import Actor
 
 

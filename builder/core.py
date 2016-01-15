@@ -8,6 +8,7 @@ from github3 import login
 
 from .sources import GitSource
 
+
 class Container(object):
     objects = []
 

@@ -1,10 +1,10 @@
 from .repo import Repository
-from .package import Package
 from ..core import Container, Object, workdir
 from .tasks import build_repository
 from ..utils import load_yaml
 
 import os.path
+
 
 class RepositoryContainer(Container):
     def __init__(self, config):
