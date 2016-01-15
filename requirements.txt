@@ -1,3 +1,5 @@
 celery[redis]
 pyyaml
 flake8
+flask
+github3.py
