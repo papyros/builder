@@ -24,7 +24,7 @@ class RepositoryInfo(Object):
         self.name = self._name + '/' + arch
         self.arch = arch
         self.workdir = os.path.join(parent_dir, self._name, arch)
-        self.export_dir = config['export']
+        self.export_dir = config['export'] + '/' + arch
         self.set_source(self.workdir, config['git'])
 
     def build(self):

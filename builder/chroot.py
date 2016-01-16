@@ -18,10 +18,12 @@ class Chroot:
         rsync(self.base_dir, self.workdir, sudo=True)
 
     def create_base(self):
+        packages = ['vim', 'xorg-server-xvfb']
         if not os.path.exists(self.base_dir):
-            mkarchroot(self.base_dir, ['base-devel', 'vim'])
+            mkarchroot(self.base_dir, ['base-devel'])
         else:
             arch_nspawn(self.base_dir, ['pacman', '--noconfirm', '-Syu'])
+        arch_nspawn(self.base_dir, ['pacman', '--noconfirm', '--needed', '-S'] + packages)
 
     def install(self, pkgs):
         if not isinstance(pkgs, list):
