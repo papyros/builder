@@ -1,0 +1,99 @@
+{
+  "name": "aurelia-binding",
+  "version": "1.0.0-beta.1.0.5",
+  "description": "A modern databinding library for JavaScript and HTML.",
+  "keywords": [
+    "aurelia",
+    "binding",
+    "databinding"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/binding/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-binding",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/binding"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-binding",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1.0.1",
+      "aurelia-task-queue": "npm:aurelia-task-queue@^1.0.0-beta.1",
+      "core-js": "npm:core-js@^1.2.6"
+    },
+    "devDependencies": {
+      "aurelia-dependency-injection": "npm:aurelia-dependency-injection@^1.0.0-beta.1",
+      "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1.0.1",
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "aurelia-dependency-injection": "npm:aurelia-dependency-injection@^1.0.0-beta.1",
+    "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1.0.1",
+    "babel": "npm:babel-core@^5.8.24",
+    "babel-runtime": "npm:babel-runtime@^5.8.24",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": [
+        {
+          "title": "Binding: Binding Behaviors",
+          "href": "doc/article/en-US/binding-binding-behaviors.md"
+        },
+        {
+          "title": "Binding: Value Converters",
+          "href": "doc/article/en-US/binding-value-converters.md"
+        }
+      ]
+    }
+  },
+  "gitHead": "a875d741c3f5387e0ad52c8112818c6eea02e463",
+  "_id": "aurelia-binding@1.0.0-beta.1.0.5",
+  "scripts": {},
+  "_shasum": "75b40e16f49b2a9637c7c8389fa54fae60cc612c",
+  "_from": ".",
+  "_npmVersion": "3.3.12",
+  "_nodeVersion": "5.2.0",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "75b40e16f49b2a9637c7c8389fa54fae60cc612c",
+    "tarball": "http://registry.npmjs.org/aurelia-binding/-/aurelia-binding-1.0.0-beta.1.0.5.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1.0.1",
+    "aurelia-task-queue": "npm:aurelia-task-queue@^1.0.0-beta.1",
+    "core-js": "npm:core-js@^1.2.6"
+  }
+}

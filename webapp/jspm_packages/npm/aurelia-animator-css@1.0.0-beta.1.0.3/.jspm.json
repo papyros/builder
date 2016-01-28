@@ -1,0 +1,89 @@
+{
+  "name": "aurelia-animator-css",
+  "version": "1.0.0-beta.1.0.3",
+  "description": "An implementation of the abstract Animator interface from templating which enables css-based animations.",
+  "keywords": [
+    "aurelia",
+    "animation",
+    "css",
+    "plugin"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/animator-css/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-animator-css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aurelia/animator-css"
+  },
+  "scripts": {
+    "test": "gulp build && gulp test"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-animator-css",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+      "aurelia-templating": "npm:aurelia-templating@^1.0.0-beta.1"
+    },
+    "devDependencies": {
+      "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1",
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1",
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "d7cf7737854806b48cc0cb461f81aeac7e04b9b3",
+  "_id": "aurelia-animator-css@1.0.0-beta.1.0.3",
+  "_shasum": "37b851ea3f86d0f0e62083bf4db740864c0e8a07",
+  "_from": ".",
+  "_npmVersion": "3.3.12",
+  "_nodeVersion": "5.2.0",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "37b851ea3f86d0f0e62083bf4db740864c0e8a07",
+    "tarball": "http://registry.npmjs.org/aurelia-animator-css/-/aurelia-animator-css-1.0.0-beta.1.0.3.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+    "aurelia-templating": "npm:aurelia-templating@^1.0.0-beta.1"
+  }
+}

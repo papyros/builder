@@ -1,0 +1,81 @@
+{
+  "name": "aurelia-pal-browser",
+  "version": "1.0.0-beta.1.0.3",
+  "description": "The browser-specific implementation of Aurelia's platform abstraction layer.",
+  "keywords": [
+    "aurelia",
+    "pal"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/pal-browser/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-pal-browser",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/pal-browser"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-pal-browser",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1.0.2",
+      "core-js": "npm:core-js@^1.2.6"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.22",
+      "babel-runtime": "npm:babel-runtime@^5.8.20",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "babel": "npm:babel-core@^5.8.22",
+    "babel-runtime": "npm:babel-runtime@^5.8.20",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "0fed34d2f409824615a3f488f90a60502a82b5cf",
+  "_id": "aurelia-pal-browser@1.0.0-beta.1.0.3",
+  "scripts": {},
+  "_shasum": "c8f694b4970d348c2653f2192ff5ad6d464b75f2",
+  "_from": ".",
+  "_npmVersion": "3.3.12",
+  "_nodeVersion": "5.2.0",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "c8f694b4970d348c2653f2192ff5ad6d464b75f2",
+    "tarball": "http://registry.npmjs.org/aurelia-pal-browser/-/aurelia-pal-browser-1.0.0-beta.1.0.3.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1.0.2",
+    "core-js": "npm:core-js@^1.2.6"
+  }
+}

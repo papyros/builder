@@ -1,0 +1,74 @@
+{
+  "name": "aurelia-history",
+  "version": "1.0.0-beta.1",
+  "description": "An abstract module which specifies the interface for history implementations used by a router.",
+  "keywords": [
+    "aurelia",
+    "history",
+    "router"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/history/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-history",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/history"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-history",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "2122cf86fa60e6605799fb530a78ac4a5a1c8732",
+  "_id": "aurelia-history@1.0.0-beta.1",
+  "scripts": {},
+  "_shasum": "2099fd0b06e9dc467ec2a4b0dd7f779bcb7a930a",
+  "_from": ".",
+  "_npmVersion": "2.10.1",
+  "_nodeVersion": "0.12.4",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "2099fd0b06e9dc467ec2a4b0dd7f779bcb7a930a",
+    "tarball": "http://registry.npmjs.org/aurelia-history/-/aurelia-history-1.0.0-beta.1.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm"
+}

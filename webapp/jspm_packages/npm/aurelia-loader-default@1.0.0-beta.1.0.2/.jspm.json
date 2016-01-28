@@ -1,0 +1,86 @@
+{
+  "name": "aurelia-loader-default",
+  "version": "1.0.0-beta.1.0.2",
+  "description": "A default implementation of the loader interface compatible with system.js and require-based loaders.",
+  "keywords": [
+    "aurelia",
+    "loader",
+    "modules"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/loader-default/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-loader-default",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/loader-default"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-loader-default",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-loader": "npm:aurelia-loader@^1.0.0-beta.1",
+      "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1"
+    },
+    "devDependencies": {
+      "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1",
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1",
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "36cf632b6a477a6ed36cb93b9b85d47572e2944d",
+  "_id": "aurelia-loader-default@1.0.0-beta.1.0.2",
+  "scripts": {},
+  "_shasum": "9247cc2785005c12f309e21f678928cfe9de3bac",
+  "_from": ".",
+  "_npmVersion": "3.3.12",
+  "_nodeVersion": "5.2.0",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "9247cc2785005c12f309e21f678928cfe9de3bac",
+    "tarball": "http://registry.npmjs.org/aurelia-loader-default/-/aurelia-loader-default-1.0.0-beta.1.0.2.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-loader": "npm:aurelia-loader@^1.0.0-beta.1",
+    "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1"
+  }
+}

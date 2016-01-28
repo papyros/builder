@@ -1,0 +1,84 @@
+{
+  "name": "aurelia-history-browser",
+  "version": "1.0.0-beta.1.0.1",
+  "description": "An implementation of the Aurelia history interface based on standard browser hash change and push state mechanisms.",
+  "keywords": [
+    "aurelia",
+    "history",
+    "router"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/history-browser/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-history-browser",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/history-browser"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-history-browser",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-history": "npm:aurelia-history@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+      "core-js": "npm:core-js@^1.2.6"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "d37f9703fcb81c8454ef5d9694a83e82f4112144",
+  "_id": "aurelia-history-browser@1.0.0-beta.1.0.1",
+  "scripts": {},
+  "_shasum": "af9a2d99e7b34199afc37ec36d55344b8b1c82b7",
+  "_from": ".",
+  "_npmVersion": "2.10.1",
+  "_nodeVersion": "0.12.4",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "af9a2d99e7b34199afc37ec36d55344b8b1c82b7",
+    "tarball": "http://registry.npmjs.org/aurelia-history-browser/-/aurelia-history-browser-1.0.0-beta.1.0.1.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-history": "npm:aurelia-history@^1.0.0-beta.1",
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+    "core-js": "npm:core-js@^1.2.6"
+  }
+}

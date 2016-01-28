@@ -1,0 +1,92 @@
+{
+  "name": "aurelia-templating-router",
+  "version": "1.0.0-beta.1.0.5",
+  "description": "An implementation of the RouteLoader interface for use with the router module. Also contains a custom element that allows the templating engine to display the current route.",
+  "keywords": [
+    "aurelia",
+    "templating",
+    "html"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/templating-router/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-templating-router",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/templating-router"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-templating-router",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-dependency-injection": "npm:aurelia-dependency-injection@^1.0.0-beta.1",
+      "aurelia-logging": "npm:aurelia-logging@^1.0.0-beta.1",
+      "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+      "aurelia-path": "npm:aurelia-path@^1.0.0-beta.1",
+      "aurelia-router": "npm:aurelia-router@^1.0.0-beta.1",
+      "aurelia-templating": "npm:aurelia-templating@^1.0.0-beta.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "774ec6b00ea00076e59478ff5e691b956fe3a995",
+  "_id": "aurelia-templating-router@1.0.0-beta.1.0.5",
+  "scripts": {},
+  "_shasum": "5cabed91489383b8038205a9f4c5876fb21155fc",
+  "_from": ".",
+  "_npmVersion": "3.3.12",
+  "_nodeVersion": "5.2.0",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "5cabed91489383b8038205a9f4c5876fb21155fc",
+    "tarball": "http://registry.npmjs.org/aurelia-templating-router/-/aurelia-templating-router-1.0.0-beta.1.0.5.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-dependency-injection": "npm:aurelia-dependency-injection@^1.0.0-beta.1",
+    "aurelia-logging": "npm:aurelia-logging@^1.0.0-beta.1",
+    "aurelia-metadata": "npm:aurelia-metadata@^1.0.0-beta.1",
+    "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
+    "aurelia-path": "npm:aurelia-path@^1.0.0-beta.1",
+    "aurelia-router": "npm:aurelia-router@^1.0.0-beta.1",
+    "aurelia-templating": "npm:aurelia-templating@^1.0.0-beta.1"
+  }
+}

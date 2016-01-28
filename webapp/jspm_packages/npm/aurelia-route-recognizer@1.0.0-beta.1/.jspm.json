@@ -1,0 +1,81 @@
+{
+  "name": "aurelia-route-recognizer",
+  "version": "1.0.0-beta.1",
+  "description": "A lightweight JavaScript library that matches paths against registered routes. It includes support for dynamic and star segments and nested handlers.",
+  "keywords": [
+    "aurelia",
+    "route"
+  ],
+  "homepage": "http://aurelia.io",
+  "bugs": {
+    "url": "https://github.com/aurelia/route-recognizer/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Eisenberg",
+    "email": "rob@bluespire.com",
+    "url": "http://robeisenberg.com/"
+  },
+  "main": "aurelia-route-recognizer",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aurelia/route-recognizer"
+  },
+  "jspmNodeConversion": false,
+  "jspm": {
+    "main": "aurelia-route-recognizer",
+    "format": "amd",
+    "directories": {
+      "lib": "dist/amd"
+    },
+    "dependencies": {
+      "aurelia-path": "npm:aurelia-path@^1.0.0-beta.1",
+      "core-js": "npm:core-js@^1.2.6"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "devDependencies": {
+    "babel": "npm:babel-core@^5.1.13",
+    "babel-runtime": "npm:babel-runtime@^5.1.13",
+    "core-js": "npm:core-js@^1.2.6"
+  },
+  "aurelia": {
+    "documentation": {
+      "articles": []
+    }
+  },
+  "gitHead": "3aaa03f66a2e7779f07e7d2f2d27d431cfeda2aa",
+  "_id": "aurelia-route-recognizer@1.0.0-beta.1",
+  "scripts": {},
+  "_shasum": "e16d0d89856d2bbd82e64fd6979c7ed9b052c75f",
+  "_from": ".",
+  "_npmVersion": "2.10.1",
+  "_nodeVersion": "0.12.4",
+  "_npmUser": {
+    "name": "aureliaeffect",
+    "email": "info@durandal.io"
+  },
+  "dist": {
+    "shasum": "e16d0d89856d2bbd82e64fd6979c7ed9b052c75f",
+    "tarball": "http://registry.npmjs.org/aurelia-route-recognizer/-/aurelia-route-recognizer-1.0.0-beta.1.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aureliaeffect",
+      "email": "info@durandal.io"
+    }
+  ],
+  "directories": {
+    "lib": "dist/amd"
+  },
+  "format": "amd",
+  "registry": "npm",
+  "dependencies": {
+    "aurelia-path": "npm:aurelia-path@^1.0.0-beta.1",
+    "core-js": "npm:core-js@^1.2.6"
+  }
+}
