@@ -2,6 +2,7 @@ import os
 import os.path
 
 from git import Repo
+from .utils import run
 
 
 def git_url(repo_name):
@@ -63,7 +64,7 @@ class GitSource(Source):
             self.repo.git.reset('--hard', 'origin/{}'.format(branch))
 
         if clean:
-            self.repo.git.clean('-xfd')
+            run(['git', 'clean', '-xfd'], workdir=self.workdir, sudo=True)
 
         if patch_url is not None:
             print('Applying patch: ' + patch_url)

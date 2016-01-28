@@ -6,8 +6,6 @@ from celery import Celery, Task
 from celery.utils.log import get_task_logger
 from github3 import login
 
-from .sources import GitSource
-
 
 class Container(object):
     objects = []
@@ -25,6 +23,8 @@ class Object(object):
     status = 'Not yet built'
 
     def set_source(self, workdir, url):
+        from .sources import GitSource
+        
         branch = None
         if '#' in url:
             url, other = url.split('#', 1)
