@@ -9,6 +9,13 @@ arch=("i686" "x86_64")
 url="{{ url }}"
 license=("{{ license }}")
 depends=({% for dependency in depends %}"{{ dependency }}" {% endfor %})
+{% if optdepends and optdepends|length > 0 %}
+optdepends=(
+    {% for name, description in optdepends.items()  %}
+    '{{ name }}: {{ description }}'
+    {% endfor %}
+)
+{% endif %}
 makedepends=({% block makedepends %}{% endblock %})
 provides=("${_pkgname}")
 conflicts=("${_pkgname}" {% for conflict in conflicts %}"{{ conflict }}" {% endfor %})
