@@ -42,12 +42,19 @@ def create_pkgbuild(workdir):
         pkgbuild = template.render(**config, version=version, pkgrel=rel)
 
         if pkgbuild != old_pkgbuild:
+            # from difflib import Differ
+            # from pprint import pprint
+            # d = Differ()
+            # result = list(d.compare(old_pkgbuild.split('\n'), pkgbuild.split('\n')))
+            # pprint(result)
             rel += 1
 
     pkgbuild = template.render(version=version, pkgrel=rel, **config)
 
     with open(pkgbuild_filename, 'w') as f:
         f.write(pkgbuild)
+    if version == '0':
+        pkgversion(config['name'], workdir=workdir, latest=True, include_rel=False)
 
 
 if __name__ == '__main__':
