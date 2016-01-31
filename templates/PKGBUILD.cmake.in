@@ -1,0 +1,18 @@
+{% extends "PKGBUILD.base.in" %}
+
+{% block makedepends %}"git" "qt5-tools" "cmake" "extra-cmake-modules"{% endblock %}
+
+{% block build %}
+cmake $srcdir/${_pkgname} \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DLIB_INSTALL_DIR=lib \
+    -DLIBEXEC_INSTALL_DIR=lib \
+    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+    -DBUILD_TESTING=OFF
+make
+{% endblock %}
+
+{% block package %}
+make DESTDIR="$pkgdir" install
+{% endblock %}

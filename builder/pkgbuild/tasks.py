@@ -2,10 +2,11 @@ import os.path
 from datetime import datetime
 from shutil import rmtree
 
+from git import Actor
+
 from builder.core import celery, logger
 from builder.helpers import rsync
 from builder.utils import locked, save_yaml
-from git import Actor
 
 
 @celery.task(bind=True)
@@ -19,6 +20,9 @@ def build_repository(self, repo, branch):
     if not config:
         logger.error('Repository configuration not found: ' + repo.name)
         return
+
+    logger.info('Creating PKGBUILDs...')
+    config.gen_pkgbuilds()
 
     logger.info('Loading configuration...')
     config.load()

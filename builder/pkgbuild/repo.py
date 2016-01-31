@@ -2,8 +2,9 @@ import os.path
 
 import networkx as nx
 
-from ..utils import flatten, load_yaml
+from buildpkg import create_pkgbuild
 
+from ..utils import flatten, load_yaml
 from .package import Package
 
 
@@ -18,6 +19,13 @@ class Repository:
 
         self.package_names = flatten([config['channels'][name]['packages']
                                      for name in config['channels']])
+
+    def gen_pkgbuilds(self):
+        all_package_names = self.find_packages('build.yml')
+        for name in all_package_names:
+            print(' -> ' + name)
+            pkg_dir = os.path.join(self.workdir, 'packages', name)
+            create_pkgbuild(os.path.join(pkgdir, 'build.yml'), os.path.join(pkgdir, 'PKGBUILD'))
 
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
@@ -71,12 +79,12 @@ class Repository:
         for package in self.packages:
             package.refresh()
 
-    def find_packages(self):
+    def find_packages(self, filename='PKGBUILD'):
         packages = []
         pkg_dir = os.path.join(self.workdir, 'packages')
         for file in os.listdir(pkg_dir):
             if (os.path.isdir(os.path.join(pkg_dir, file)) and
-                    os.path.exists(os.path.join(pkg_dir, file, 'PKGBUILD'))):
+                    os.path.exists(os.path.join(pkg_dir, file, filename))):
                 packages.append(file)
         return packages
 

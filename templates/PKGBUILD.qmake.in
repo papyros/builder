@@ -1,0 +1,12 @@
+{% extends "PKGBUILD.base.in" %}
+
+{% block makedepends %}"git" "qt5-tools"{% endblock %}
+
+{% block build %}
+qmake $srcdir/${_pkgname}
+make
+{% endblock %}
+
+{% block package %}
+make INSTALL_ROOT="$pkgdir" install
+{% endblock %}
