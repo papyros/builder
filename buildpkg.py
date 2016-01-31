@@ -19,6 +19,8 @@ def create_pkgbuild(workdir):
     build_filename = os.path.join(workdir, 'build.yml')
     pkgbuild_filename = os.path.join(workdir, 'PKGBUILD')
 
+    print(pkgbuild_filename)
+
     config = load_yaml(build_filename)
     config['optdepends'] = OrderedDict(sorted(config.get('optdepends', {}).items(),
                                        key=lambda t: t[0]))
