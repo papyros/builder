@@ -20,21 +20,9 @@
 #
 
 usage() {
-    echo "Usage: $0 [-l] <path to PKGBUILD>"
+    echo "Usage: $0 <path to PKGBUILD>"
     exit 1
 }
-
-while getopts "l" o; do
-    case "${o}" in
-        l)
-            makepkg -od &>/dev/null
-            ;;
-        *)
-            usage
-            ;;
-    esac
-done
-shift $((OPTIND-1))
 
 pkgbuild=$1
 
@@ -44,20 +32,4 @@ fi
 
 source $pkgbuild
 
-basedir=`readlink -f $(dirname $pkgbuild)`
-srcdir="$basedir/src"
-
-pkgbase=${pkgbase:-${pkgname[0]}}
-
-if [ "`type -t pkgver`" = 'function' ]; then
-    cd $srcdir
-    ver=$(pkgver)
-
-    if [ -z "$ver" ]; then
-        echo "?"
-    else
-        echo $ver
-    fi
-else
-    echo $pkgver
-fi
+echo $pkgrel

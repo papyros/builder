@@ -10,7 +10,7 @@ def helper(name, args, workdir, sudo=False):
     return utils.helper('pkgbuild', name, args, workdir=workdir, sudo=sudo)
 
 
-def pkgversion(pkgname, workdir, latest=False):
+def pkgversion(pkgname, workdir, latest=False, include_rel=True):
     args = []
     if latest:
         args += ['-l']
@@ -18,7 +18,14 @@ def pkgversion(pkgname, workdir, latest=False):
     latest_version = helper('pkgversion', args, workdir=workdir)
     if latest_version == "?":
         raise Exception('Unable to determine the version of {}'.format(pkgname))
+    if include_rel:
+        latest_version += '-' + pkgrel(pkgname, workdir)
     return latest_version
+
+
+def pkgrel(pkgname, workdir):
+    args = ['PKGBUILD']
+    return helper('pkgrel', args, workdir=workdir)
 
 
 def pkgdepends(workdir):

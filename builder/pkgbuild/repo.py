@@ -25,7 +25,7 @@ class Repository:
         for name in all_package_names:
             print(' -> ' + name)
             pkgdir = os.path.join(self.workdir, 'packages', name)
-            create_pkgbuild(os.path.join(pkgdir, 'build.yml'), os.path.join(pkgdir, 'PKGBUILD'))
+            create_pkgbuild(pkgdir)
 
     def load(self):
         self.buildinfo = load_yaml(os.path.join(self.workdir, "buildinfo.yml"))
