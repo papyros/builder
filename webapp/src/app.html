@@ -1,3 +1,10 @@
 <template>
-  <h1>${message}</h1>
+  <require from='semantic-ui/semantic.css'></require>
+  <require from='navbar.html'></require>
+
+  <navbar router.bind="router"></navbar>
+
+  <div class="ui container" style="padding-top: 80px">
+    <router-view></router-view>
+  </div>
 </template>

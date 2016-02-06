@@ -1,0 +1,14 @@
+<template>
+  <div class="ui segments">
+    <h5 class="ui top attached header">
+      Package Repositories
+    </h5>
+    <div repeat.for="repo of repositories"
+         class="ui attached clearing clickable segment" click.trigger="viewRepository(repo)">
+      <div class="ui left floated labeled">${repo.name}</div>
+      <div class="ui right floated ${statusColor(repo.status)} label">
+        ${statusLabel(repo.status)}
+      </div>
+    </div>
+  </div>
+</template>
