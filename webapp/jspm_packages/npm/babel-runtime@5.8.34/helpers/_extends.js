@@ -1,6 +1,6 @@
 /* */ 
 "use strict";
-var _assign = require("../core-js/object/assign");
+var _assign = require('../core-js/object/assign');
 var _assign2 = _interopRequireDefault(_assign);
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {default: obj};

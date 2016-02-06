@@ -1,6 +1,6 @@
 /* */ 
 "use strict";
-var _promise = require("../core-js/promise");
+var _promise = require('../core-js/promise');
 var _promise2 = _interopRequireDefault(_promise);
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {default: obj};

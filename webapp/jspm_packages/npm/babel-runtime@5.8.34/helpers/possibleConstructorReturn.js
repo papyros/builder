@@ -1,6 +1,6 @@
 /* */ 
 "use strict";
-var _typeof2 = require("./typeof");
+var _typeof2 = require('./typeof');
 var _typeof3 = _interopRequireDefault(_typeof2);
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {default: obj};

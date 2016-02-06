@@ -1,1 +1,2 @@
-/Users/EisenbergEffect/.jspm/packages/npm/babel-runtime@5.8.34/helpers/typeof-react-element.js:5:63: Unexpected token "for",/Users/EisenbergEffect/.jspm/packages/npm/babel-runtime@5.8.34/helpers/typeof-react-element.js:5:80: Unexpected token "for"
+MultipleErrors: /home/mspencer/.jspm/packages/npm/babel-runtime@5.8.34/helpers/typeof-react-element.js:5:63: Unexpected token "for"
+/home/mspencer/.jspm/packages/npm/babel-runtime@5.8.34/helpers/typeof-react-element.js:5:80: Unexpected token "for"

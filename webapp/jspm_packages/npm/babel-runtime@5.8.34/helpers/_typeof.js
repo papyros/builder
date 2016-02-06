@@ -1,8 +1,8 @@
 /* */ 
 "use strict";
-var _typeof2 = require("./typeof");
+var _typeof2 = require('./typeof');
 var _typeof3 = _interopRequireDefault(_typeof2);
-var _symbol = require("../core-js/symbol");
+var _symbol = require('../core-js/symbol');
 var _symbol2 = _interopRequireDefault(_symbol);
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {default: obj};

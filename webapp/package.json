@@ -34,6 +34,7 @@
       "bootstrap": "github:twbs/bootstrap@^3.3.5",
       "fetch": "github:github/fetch@^0.10.1",
       "font-awesome": "npm:font-awesome@^4.4.0",
+      "semantic-ui": "github:Semantic-Org/Semantic-UI@^2.1.8",
       "text": "github:systemjs/plugin-text@^0.0.3"
     },
     "devDependencies": {
