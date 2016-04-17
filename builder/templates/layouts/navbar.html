@@ -1,0 +1,13 @@
+{% set navigation_bar = [
+    ('/', 'Jobs'),
+    ('/history', 'Build History')
+] -%}
+
+<div class="ui large top fixed menu">
+  <div class="ui container">
+    {% for path, title in navigation_bar %}
+      <a class="{% if request.path == path %}active{% endif %} item" href="{{ path }}">{{ title }}</a>
+    {% endfor %}
+  {{ active_page }}
+  </div>
+</div>

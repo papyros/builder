@@ -1,0 +1,7 @@
+celery[redis]
+pyyaml
+flake8
+flask
+flask-mongoengine
+flask-assets
+cssmin

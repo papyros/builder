@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+
+{% block body %}
+<div class="ui segments">
+  {% for job in jobs %}
+    <div class="ui job segment">
+      <p>{{ job.title }}</p>
+      <div class="ui {{  job.status|status_color }} horizontal label">{{ job.status|status_text }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

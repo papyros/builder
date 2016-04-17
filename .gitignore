@@ -1,8 +1,7 @@
 *.pyc
-chroots
-working
 __pycache__
-.github_auth
+.webassets-cache
+dist
 
 # User-specific stuff:
 .idea/workspace.xml

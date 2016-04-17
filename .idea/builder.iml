@@ -4,12 +4,19 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="Python 3.5.0 virtualenv at ~/.virtualenvs/builder" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="semantic" level="application" />
+    <orderEntry type="library" name="jquery" level="application" />
   </component>
   <component name="PyBDDFrameworkConfig">
     <option name="preferedFrameworkName" value="behave" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/builder/templates" />
+      </list>
+    </option>
   </component>
   <component name="TestRunnerService">
     <option name="projectConfiguration" value="py.test" />

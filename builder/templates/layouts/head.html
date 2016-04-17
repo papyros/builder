@@ -1,0 +1,14 @@
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Papyros Builder{% endblock %}</title>
+
+  <link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.css">
+
+  {% assets "css" -%}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {%- endassets %}
+
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+  <script src="//oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.js"></script>
+</head>
