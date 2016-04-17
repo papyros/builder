@@ -1,9 +1,11 @@
-.job.segment {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.selected-job {
+    .title {
+        display: flex;
+        align-items: center;
 
-    p {
-        margin-bottom: 0;
+        h1 {
+            flex: 1;
+            margin: 0 !important;
+        }
     }
 }

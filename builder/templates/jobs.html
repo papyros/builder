@@ -1,12 +1,31 @@
 {% extends "layouts/base.html" %}
 
 {% block body %}
-<div class="ui segments">
-  {% for job in jobs %}
-    <div class="ui job segment">
-      <p>{{ job.title }}</p>
-      <div class="ui {{  job.status|status_color }} horizontal label">{{ job.status|status_text }}</div>
+  <div class="ui grid">
+    <div class="five wide column">
+      <div class="ui fluid vertical pointing menu">
+        {% for job in jobs %}
+          <a class="{% if job == selected_job %}blue active{% endif %} item"
+             href="{{ url_for('frontend.jobs', selected=loop.index0) }}">
+            {{ job.title }}
+            <div class="ui {{  job.status|status_color }} label">
+              <i class="{{ job.status|status_icon }} icon"></i>
+              {{ job.status|status_text }}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
     </div>
-  {% endfor %}
+
+    <div class="eleven wide selected-job column">
+      <div class="title">
+        <h1 class="ui header">
+          {{ selected_job.title }}
+        </h1>
+
+        <div class="ui green button">Build Now</div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

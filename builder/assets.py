@@ -10,7 +10,7 @@ scss = get_filter('scss', as_output=True, load_paths=[os.path.join(static_dir, '
 
 
 # Application styles
-css = Bundle("css/main.scss",
+css = Bundle("css/base.scss", "css/jobs.scss",
              filters=scss, output="dist/builder.css",
              debug=False)
 

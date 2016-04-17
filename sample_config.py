@@ -9,4 +9,4 @@ class SampleBuild(Build):
         pass
 
 
-config.jobs = [Job('Test job', SampleBuild)]
+config.jobs = [Job('Test job', SampleBuild), Job('Another job', SampleBuild), Job('Third project', SampleBuild)]

@@ -6,6 +6,7 @@ __author__ = 'Michael Spencer'
 def init_app(app):
     app.template_filter('status_color')(status_color)
     app.template_filter('status_text')(status_text)
+    app.template_filter('status_icon')(status_icon)
 
 
 def status_color(status):
@@ -40,3 +41,20 @@ def status_text(status):
         return 'Running'
     else:
         return 'Unknown'
+
+
+def status_icon(status):
+    if status == Status.not_built:
+        return 'minus circle'
+    elif status == Status.pending:
+        return 'wait'
+    elif status == Status.passed:
+        return 'checkmark'
+    elif status == Status.failed:
+        return 'warning sign'
+    elif status == Status.error:
+        return 'warning circle'
+    elif status == Status.running:
+        return 'spinner'
+    else:
+        return 'help circle'
